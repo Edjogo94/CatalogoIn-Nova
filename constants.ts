@@ -1,4 +1,6 @@
 
+export const WHATSAPP_PHONE = "573206064030";
+
 export const RAW_PRODUCT_NAMES = [
   "HIDROLAVADORA",
   "SECADOR AGUACATE",
@@ -89,6 +91,36 @@ export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
   "KIT ARTISTICO DE 208 PIEZAS": 35000
 };
 
+export const PRODUCT_STOCK: Record<string, number> = {
+  "HIDROLAVADORA": 5,
+  "SECADOR AGUACATE": 7,
+  "TOPE DE PUERTA": 2,
+  "CEPILLO SECADOR 5 EN 1": 6,
+  "RELOJ DE PARED 3D 80 CM X 100 CM": 7,
+  "COMBO TAPETE ULTRA ABSORBENTE": 7,
+  "DISPENSADOR DE JABÓN MULTIFUNCIONAL": 6,
+  "CÁMARA DE SEGURIDAD IK100": 7,
+  "ESTANTE ESQUINERO DE BAÑO": 7,
+  "TUBO MULTIFUNCIONAL 90 A 160 CM": 7,
+  "TUBO TENDEDERO PEQUEÑO 60 CM A 100 CM": 7,
+  "TUBO MULTIFUNCIONAL GRANDE 160 A 300 CM": 7,
+  "LAMPARA SOLAR PANEL 6000W": 6,
+  "PAPEL TAPIZ": 7,
+  "CINTA LED 5 METROS": 7,
+  "GRAMERA SF-400": 6,
+  "ORGANIZADOR DE ROPA SUCIA 3 COMP": 7,
+  "REMOVEDOR DE MOTA ELECTRICO DELUXE": 7,
+  "CINTA DOBLE FAX EXTRAFUERTE 3M": 7,
+  "TERMO LICUADORA PORTÁTIL 1500ML": 6,
+  "ORGANIZADOR DUCHA 5PZS": 7,
+  "SET DE CUCHILLO X6 0238A": 6,
+  "ORGANIZADOR DE CALZADO 3 NIVELES": 7,
+  "BARBERA GEEMY": 7,
+  "DIADEMA P9": 7,
+  "SET DE MALETA DE ARTE": 7,
+  "KIT ARTISTICO DE 208 PIEZAS": 7
+};
+
 export const PRODUCT_ASSETS: Record<string, { image?: string; video?: string }> = {
   "HIDROLAVADORA": {
     image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/ce2d6631-097e-4fac-8707-0e40197b19e7.webp",
@@ -116,7 +148,7 @@ export const PRODUCT_ASSETS: Record<string, { image?: string; video?: string }> 
     image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/068e6304-ae00-41be-bd1c-fbd0324f8b33.webp"
   },
   "ESTANTE ESQUINERO DE BAÑO": {
-    image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/98d28124-b049-4977-942b-58679f29a071.webp"
+    image: "https://http2.mlstatic.com/D_NQ_NP_2X_632020-MLA94377174233_102025-F.webp"
   },
   "TUBO MULTIFUNCIONAL 90 A 160 CM": {
     image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/e1884248-42d9-4439-a455-d1a04b64a045.webp"
@@ -152,7 +184,7 @@ export const PRODUCT_ASSETS: Record<string, { image?: string; video?: string }> 
     image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/cbb8b94e-a28f-4795-80bb-26f61eec066a.webp"
   },
   "ORGANIZADOR DUCHA 5PZS": {
-    image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/3932e67d-6062-421f-84d2-f41857065910.webp"
+    image: "https://http2.mlstatic.com/D_Q_NP_976721-MLA99469436362_112025-F.webp"
   },
   "SET DE CUCHILLO X6 0238A": {
     image: "https://img.kwcdn.com/product/fancy/f3014bad-94cc-4e31-9096-71384ff36aa8.jpg?imageView2/2/w/800/q/70/format/avif"

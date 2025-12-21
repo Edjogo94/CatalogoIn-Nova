@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Product } from '../types';
-import { CATEGORY_COLORS } from '../constants';
+import { CATEGORY_COLORS, WHATSAPP_PHONE } from '../constants';
 
 interface ProductCardProps {
   product: Product;
@@ -19,8 +19,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const text = `¡Hola! Me interesa la *${product.name}* del catálogo. ¿Tienen disponibilidad?`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+    const text = `¡Hola! Me interesa la *${product.name}* (Precio: ${formatPrice(product.retailPrice)}). ¿Tienen disponibilidad?`;
+    window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   return (
@@ -37,9 +37,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
-        <div className="absolute top-5 left-5">
+        <div className="absolute top-5 left-5 flex flex-col gap-2">
           <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.15em] shadow-sm backdrop-blur-md ${CATEGORY_COLORS[product.category] || 'bg-white/90 text-slate-600'}`}>
             {product.category}
+          </span>
+          <span className="bg-slate-900/80 text-white px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest backdrop-blur-sm">
+            Disponibles: {product.stock}
           </span>
         </div>
 
@@ -59,22 +62,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           {product.description}
         </p>
         
-        <div className="mt-auto flex items-end justify-between pt-4 border-t border-slate-50">
-          <div className="flex flex-col">
-            <div className="flex items-center space-x-2 mb-1">
-              <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Detal</span>
-              <span className="text-[10px] font-bold text-slate-400 line-through">{formatPrice(product.retailPrice)}</span>
+        <div className="mt-auto flex flex-col pt-4 border-t border-slate-50">
+          <div className="flex justify-between items-end">
+            <div className="flex flex-col">
+              <span className="text-[9px] font-black text-cyan-600 uppercase tracking-widest leading-none mb-1">Precio al Detal</span>
+              <span className="text-2xl font-black text-slate-900 leading-none tracking-tighter">
+                {formatPrice(product.retailPrice)}
+              </span>
             </div>
-            <span className="text-[9px] font-black text-cyan-600 uppercase tracking-widest leading-none mb-1">X Mayor</span>
-            <span className="text-2xl font-black text-slate-900 leading-none tracking-tighter">
-              {formatPrice(product.price)}
-            </span>
-          </div>
-          
-          <div className="bg-slate-50 group-hover:bg-slate-900 p-3 rounded-2xl transition-all duration-500">
-            <svg className="w-4 h-4 text-slate-400 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" />
-            </svg>
+            
+            <div className="flex flex-col items-end">
+              <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Al Mayor</span>
+              <span className="text-[11px] font-bold text-slate-400">{formatPrice(product.price)}</span>
+            </div>
           </div>
         </div>
       </div>

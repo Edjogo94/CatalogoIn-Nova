@@ -6,10 +6,15 @@ export interface Product {
   description: string;
   price: number; 
   retailPrice: number;
+  stock: number; // New property for available units
   image: string;
   features: string[];
   videoUrl?: string;
   originalIndex?: number;
+}
+
+export interface CartItem extends Product {
+  quantity: number;
 }
 
 export enum Category {
