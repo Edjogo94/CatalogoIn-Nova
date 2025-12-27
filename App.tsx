@@ -7,29 +7,13 @@ import ProductCard from './components/ProductCard';
 import ProductModal from './components/ProductModal';
 import CartDrawer from './components/CartDrawer';
 
-const CACHE_KEY = 'innova_catalog_v48';
+const CACHE_KEY = 'innova_catalog_v50';
 
 const LogoHexagon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <div className={`${className} relative flex items-center justify-center`}>
     <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
-      <path 
-        d="M50 5 L93.3 30 V70 L50 95 L6.7 70 V30 Z" 
-        fill="#0f172a" 
-        stroke="#06b6d4" 
-        strokeWidth="6"
-      />
-      <text 
-        x="50" 
-        y="62" 
-        textAnchor="middle" 
-        fill="#f8fafc" 
-        fontFamily="Inter, sans-serif" 
-        fontWeight="900" 
-        fontSize="34"
-        letterSpacing="-1"
-      >
-        IN
-      </text>
+      <path d="M50 5 L93.3 30 V70 L50 95 L6.7 70 V30 Z" fill="#0f172a" stroke="#06b6d4" strokeWidth="6"/>
+      <text x="50" y="62" textAnchor="middle" fill="#f8fafc" fontFamily="Inter, sans-serif" fontWeight="900" fontSize="34" letterSpacing="-1">IN</text>
     </svg>
   </div>
 );
@@ -39,7 +23,6 @@ const App: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category>(Category.ALL);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -48,71 +31,58 @@ const App: React.FC = () => {
     const initApp = async () => {
       try {
         setLoading(true);
-        const cachedData = localStorage.getItem(CACHE_KEY);
         
-        if (cachedData) {
-          const parsed = JSON.parse(cachedData);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setProducts(parsed);
-            setLoading(false);
-            return;
-          }
+        // 1. Cargar productos locales primero (resiliencia)
+        const baseProducts = RAW_PRODUCT_NAMES.map((name, index) => ({
+          id: `prod-${index}`,
+          name: name,
+          category: Category.HOME,
+          description: "Producto innovador de alta calidad para tu hogar.",
+          price: PRODUCT_PRICES[name] || 0,
+          retailPrice: PRODUCT_RETAIL_PRICES[name] || 0,
+          stock: PRODUCT_STOCK[name] || 5,
+          image: PRODUCT_ASSETS[name]?.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800',
+          features: ["Calidad garantizada", "Envío rápido", "Mejor precio"],
+          videoUrl: PRODUCT_ASSETS[name]?.video,
+          originalIndex: index
+        }));
+
+        setProducts(baseProducts);
+
+        // 2. Intentar cargar desde caché o API
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setProducts(parsed);
+              setLoading(false);
+              return;
+            }
+          } catch(e) { console.error("Error parseando cache"); }
         }
 
-        // Crear datos base por si falla la API
-        const baseProducts = RAW_PRODUCT_NAMES.map((originalName, index) => {
-          const assets = PRODUCT_ASSETS[originalName] || {};
-          const wholesalePrice = PRODUCT_PRICES[originalName] || 0;
-          const retailPrice = PRODUCT_RETAIL_PRICES[originalName] || Math.round(wholesalePrice * 1.2);
-          const stock = PRODUCT_STOCK[originalName] ?? 5;
-
-          return {
-            id: `prod-${index}`,
-            name: originalName,
-            category: Category.HOME,
-            description: "Producto innovador de alta calidad.",
-            price: wholesalePrice,
-            retailPrice: retailPrice,
-            stock: stock,
-            image: assets.image || `https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800`,
-            features: ["Garantía de calidad", "Envío nacional", "Excelente precio"],
-            videoUrl: assets.video,
-            originalIndex: index
-          } as Product;
-        });
-
-        try {
-          const data = await enrichProductData(RAW_PRODUCT_NAMES);
-          const enriched = RAW_PRODUCT_NAMES.map((originalName, index) => {
-            const aiResult = data?.products?.find(p => p.originalIndex === index) || data?.products?.[index];
-            const assets = PRODUCT_ASSETS[originalName] || {};
-            const wholesalePrice = PRODUCT_PRICES[originalName] || (aiResult?.price || 0);
-            const retailPrice = PRODUCT_RETAIL_PRICES[originalName] || Math.round(wholesalePrice * 1.2);
-            const stock = PRODUCT_STOCK[originalName] ?? 7;
-
-            return {
-              id: `prod-${index}`,
-              name: aiResult?.name || originalName,
-              category: aiResult?.category || Category.HOME,
-              description: aiResult?.description || "Producto de alta calidad.",
-              price: wholesalePrice,
-              retailPrice: retailPrice,
-              stock: stock,
-              image: assets.image || `https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800`,
-              features: aiResult?.features || ["Garantía de calidad", "Envío nacional", "Excelente precio"],
-              videoUrl: assets.video,
-              originalIndex: index
-            } as Product;
+        // 3. Intentar enriquecer con Gemini
+        const aiData = await enrichProductData(RAW_PRODUCT_NAMES);
+        if (aiData && aiData.products && aiData.products.length > 0) {
+          const enriched = baseProducts.map((p, idx) => {
+            const ai = aiData.products.find(item => item.originalIndex === idx);
+            if (ai) {
+              return {
+                ...p,
+                name: ai.name || p.name,
+                category: ai.category || p.category,
+                description: ai.description || p.description,
+                features: ai.features || p.features
+              };
+            }
+            return p;
           });
           setProducts(enriched);
           localStorage.setItem(CACHE_KEY, JSON.stringify(enriched));
-        } catch (apiErr) {
-          console.warn("API de Gemini falló, usando datos base:", apiErr);
-          setProducts(baseProducts);
         }
       } catch (err) {
-        console.error("Error crítico inicializando app:", err);
-        setError("Ocurrió un error al cargar el catálogo. Por favor recarga la página.");
+        console.error("Fallo crítico en carga de App:", err);
       } finally {
         setLoading(false);
       }
@@ -123,164 +93,82 @@ const App: React.FC = () => {
   const addToCart = (product: Product, quantity: number) => {
     setCart(prev => {
       const existing = prev.find(item => item.id === product.id);
-      if (existing) {
-        return prev.map(item => item.id === product.id ? { ...item, quantity: Math.min(product.stock, item.quantity + quantity) } : item);
-      }
+      if (existing) return prev.map(item => item.id === product.id ? { ...item, quantity: Math.min(product.stock, item.quantity + quantity) } : item);
       return [...prev, { ...product, quantity }];
     });
     setIsCartOpen(true);
   };
 
-  const updateCartQuantity = (id: string, delta: number) => {
-    setCart(prev => prev.map(item => {
-      if (item.id === id) {
-        return { ...item, quantity: Math.min(item.stock, Math.max(1, item.quantity + delta)) };
-      }
-      return item;
-    }));
-  };
-
-  const removeFromCart = (id: string) => {
-    setCart(prev => prev.filter(item => item.id !== id));
-  };
-
   const filteredProducts = useMemo(() => {
     return products.filter(p => {
       const matchesCategory = selectedCategory === Category.ALL || p.category === selectedCategory;
-      const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                           p.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesCategory && matchesSearch;
     });
   }, [products, selectedCategory, searchTerm]);
 
-  const totalItemsCount = cart.reduce((acc, item) => acc + item.quantity, 0);
-
-  if (loading) {
+  if (loading && products.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
-        <LogoHexagon className="w-20 h-20 animate-bounce mb-6" />
-        <p className="text-slate-400 text-[10px] font-black tracking-[0.5em] uppercase animate-pulse">In-Nova está llegando...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-6 text-center">
-        <div className="bg-red-50 text-red-500 p-8 rounded-[2rem] border border-red-100 max-w-md">
-          <svg className="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-          <p className="font-black uppercase tracking-widest text-sm mb-2">Error de Conexión</p>
-          <p className="text-xs font-medium opacity-80 mb-6">{error}</p>
-          <button onClick={() => window.location.reload()} className="bg-red-500 text-white px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-red-600 transition-colors">Reintentar</button>
-        </div>
+        <LogoHexagon className="w-16 h-16 animate-pulse mb-4" />
+        <p className="text-slate-400 text-[10px] font-black tracking-widest uppercase">Cargando In-Nova...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 selection:bg-cyan-100 relative">
-      <header className="sticky top-0 z-40 bg-white/70 backdrop-blur-2xl border-b border-slate-100/50">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center justify-between md:justify-start gap-6">
-            <div className="flex items-center space-x-4">
-              <LogoHexagon className="w-12 h-12" />
-              <div>
-                <h1 className="text-2xl font-black text-slate-900 leading-none uppercase tracking-tighter">In-Nova</h1>
-                <span className="text-[10px] font-bold text-cyan-600 uppercase tracking-widest mt-1 inline-block">Distribuciones</span>
-              </div>
+    <div className="min-h-screen flex flex-col bg-slate-50">
+      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100 px-4 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <LogoHexagon className="w-10 h-10" />
+            <div className="hidden sm:block">
+              <h1 className="text-xl font-black uppercase tracking-tighter">In-Nova</h1>
+              <p className="text-[8px] font-bold text-cyan-600 uppercase tracking-widest">Distribuciones</p>
             </div>
-            <button onClick={() => setIsCartOpen(true)} className="md:hidden relative p-3 bg-slate-900 text-white rounded-2xl">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-              {totalItemsCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-cyan-500 text-white text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">{totalItemsCount}</span>
-              )}
-            </button>
           </div>
           
-          <div className="relative flex-1 max-w-lg mx-auto md:mx-0">
+          <div className="relative flex-1 max-w-md">
             <input 
-              type="text" 
-              placeholder="¿Qué innovamos hoy?" 
-              className="w-full bg-white border border-slate-200 rounded-2xl py-3.5 pl-14 pr-4 text-sm focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500 transition-all outline-none shadow-sm" 
-              value={searchTerm} 
-              onChange={(e) => setSearchTerm(e.target.value)} 
+              type="text" placeholder="Buscar producto..." 
+              className="w-full bg-slate-100 rounded-xl py-2 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-cyan-500/20"
+              value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <svg className="absolute left-5 top-4 h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+            <svg className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
           </div>
 
-          <button onClick={() => setIsCartOpen(true)} className="hidden md:flex items-center gap-4 bg-slate-900 text-white px-6 py-3.5 rounded-2xl hover:bg-cyan-600 transition-all group relative">
-            <span className="text-xs font-black uppercase tracking-widest">Mi Pedido</span>
-            <div className="h-6 w-px bg-white/20"></div>
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-              <span className="text-sm font-black">{totalItemsCount}</span>
-            </div>
+          <button onClick={() => setIsCartOpen(true)} className="bg-slate-900 text-white p-2.5 rounded-xl relative">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+            {cart.length > 0 && <span className="absolute -top-1 -right-1 bg-cyan-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full">{cart.reduce((a,b)=>a+b.quantity,0)}</span>}
           </button>
         </div>
       </header>
 
-      <main className="flex-grow max-w-7xl w-full mx-auto px-4 py-10">
-        <div className="flex overflow-x-auto pb-6 mb-10 space-x-3 no-scrollbar snap-x">
-          {Object.values(Category).map((cat) => (
+      <main className="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
+        <div className="flex gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar">
+          {Object.values(Category).map(cat => (
             <button 
-              key={cat} 
-              onClick={() => setSelectedCategory(cat)} 
-              className={`whitespace-nowrap px-8 py-3 rounded-2xl text-[10px] font-black tracking-widest transition-all snap-start ${selectedCategory === cat ? 'bg-slate-900 text-white shadow-xl shadow-slate-200 scale-105' : 'bg-white text-slate-400 hover:text-slate-900 border border-slate-100 hover:border-slate-200'}`}
+              key={cat} onClick={() => setSelectedCategory(cat)}
+              className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${selectedCategory === cat ? 'bg-slate-900 text-white' : 'bg-white text-slate-400 border border-slate-100'}`}
             >
-              {cat.toUpperCase()}
+              {cat}
             </button>
           ))}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} onClick={setSelectedProduct} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredProducts.map(p => (
+            <ProductCard key={p.id} product={p} onClick={setSelectedProduct} />
           ))}
-          {filteredProducts.length === 0 && (
-            <div className="col-span-full py-20 text-center">
-              <p className="text-slate-400 font-bold uppercase tracking-widest text-xs italic">No encontramos productos que coincidan</p>
-            </div>
-          )}
         </div>
       </main>
 
-      {/* Floating Cart Button for Mobile */}
-      <button 
-        onClick={() => setIsCartOpen(true)}
-        className="fixed bottom-8 right-8 z-40 bg-slate-900 text-white p-5 rounded-full shadow-2xl md:hidden hover:scale-110 active:scale-95 transition-all"
-      >
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-        {totalItemsCount > 0 && (
-          <span className="absolute top-0 right-0 bg-cyan-500 text-white text-xs font-black w-7 h-7 flex items-center justify-center rounded-full border-4 border-slate-50">{totalItemsCount}</span>
-        )}
-      </button>
-
-      <footer className="bg-white border-t border-slate-100 py-20 mt-20">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <LogoHexagon className="w-14 h-14 mx-auto mb-8 opacity-20" />
-          <p className="text-slate-400 text-xs font-bold tracking-widest uppercase mb-4">Innovación Local • Calidad Global</p>
-          <div className="text-[12px] text-slate-900 font-black tracking-[0.5em] uppercase">DISTRIBUCIONES IN-NOVA 2025</div>
-        </div>
+      <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} onAddToCart={addToCart} />
+      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} items={cart} onUpdateQuantity={(id, d) => setCart(prev => prev.map(i => i.id === id ? {...i, quantity: Math.max(1, i.quantity + d)} : i))} onRemove={(id) => setCart(prev => prev.filter(i => i.id !== id))} />
+      
+      <footer className="bg-white py-10 text-center border-t border-slate-100 mt-10">
+        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.4em]">Distribuciones In-Nova 2025</p>
       </footer>
-
-      <ProductModal 
-        product={selectedProduct} 
-        onClose={() => setSelectedProduct(null)} 
-        onAddToCart={(p, q) => {
-          addToCart(p, q);
-          setSelectedProduct(null);
-        }}
-      />
-
-      <CartDrawer 
-        isOpen={isCartOpen} 
-        onClose={() => setIsCartOpen(false)} 
-        items={cart} 
-        onUpdateQuantity={updateCartQuantity} 
-        onRemove={removeFromCart} 
-      />
     </div>
   );
 };
