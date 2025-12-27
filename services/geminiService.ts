@@ -4,10 +4,12 @@ import { EnrichmentResponse } from "../types";
 
 export const enrichProductData = async (productNames: string[]): Promise<EnrichmentResponse> => {
   try {
-    const apiKey = process.env.API_KEY || "";
-    if (!apiKey) {
-      console.warn("API_KEY no encontrada en process.env");
-      throw new Error("No API Key");
+    // Intentamos obtener la clave. Si no existe, devolvemos datos vacíos sin lanzar error fatal.
+    const apiKey = process.env.API_KEY;
+    
+    if (!apiKey || apiKey === "") {
+      console.warn("API_KEY no configurada. El catálogo funcionará con datos básicos.");
+      return { products: [] };
     }
 
     const ai = new GoogleGenAI({ apiKey });
@@ -33,13 +35,12 @@ export const enrichProductData = async (productNames: string[]): Promise<Enrichm
                   name: { type: Type.STRING },
                   category: { type: Type.STRING },
                   description: { type: Type.STRING },
-                  price: { type: Type.NUMBER },
                   features: {
                     type: Type.ARRAY,
                     items: { type: Type.STRING }
                   }
                 },
-                required: ["originalIndex", "name", "category", "description", "price", "features"]
+                required: ["originalIndex", "name", "category", "description", "features"]
               }
             }
           },
@@ -49,13 +50,12 @@ export const enrichProductData = async (productNames: string[]): Promise<Enrichm
     });
 
     if (!response || !response.text) {
-      throw new Error("Respuesta vacía de Gemini");
+      throw new Error("Respuesta de IA vacía");
     }
 
     return JSON.parse(response.text) as EnrichmentResponse;
   } catch (error) {
-    console.error("Error en enrichProductData:", error);
-    // Devolvemos una estructura vacía para que el frontend no rompa
+    console.error("Error en servicio Gemini:", error);
     return { products: [] };
   }
 };
