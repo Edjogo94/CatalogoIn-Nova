@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import { Product, Category, CartItem } from './types';
 import { RAW_PRODUCT_NAMES, PRODUCT_ASSETS, PRODUCT_PRICES, PRODUCT_RETAIL_PRICES, PRODUCT_STOCK } from './constants';
@@ -7,7 +6,7 @@ import ProductCard from './components/ProductCard';
 import ProductModal from './components/ProductModal';
 import CartDrawer from './components/CartDrawer';
 
-const CACHE_KEY = 'innova_catalog_v30'; // Updated cache key for stock data
+const CACHE_KEY = 'innova_catalog_v47'; // Incrementado a v47 para aplicar cambios de precio
 
 const LogoHexagon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <div className={`${className} relative flex items-center justify-center`}>
