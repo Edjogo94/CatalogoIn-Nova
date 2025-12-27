@@ -6,11 +6,13 @@ export interface Product {
   description: string;
   price: number; 
   retailPrice: number;
-  stock: number; // New property for available units
+  stock: number;
   image: string;
   features: string[];
   videoUrl?: string;
   originalIndex?: number;
+  isNew?: boolean;
+  isCombo?: boolean;
 }
 
 export interface CartItem extends Product {
@@ -24,6 +26,7 @@ export enum Category {
   KITCHEN = 'Cocina',
   ORGANIZATION = 'Organización',
   TOOLS = 'Herramientas',
+  COMBOS = 'Combos',
   ALL = 'Todos'
 }
 

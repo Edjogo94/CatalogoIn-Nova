@@ -1,6 +1,7 @@
 export const WHATSAPP_PHONE = "573206064030";
 
 export const RAW_PRODUCT_NAMES = [
+  "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA",
   "HIDROLAVADORA",
   "SECADOR AGUACATE",
   "TOPE DE PUERTA",
@@ -43,6 +44,7 @@ export const RAW_PRODUCT_NAMES = [
 ];
 
 export const PRODUCT_DESCRIPTIONS: Record<string, string> = {
+  "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": "¡EL DÚO DINÁMICO DE LIMPIEZA! Llévate nuestra hidrolavadora de alta presión junto a la aspiradora de mano inalámbrica por un precio imbatible.",
   "HIDROLAVADORA": "Potente limpieza a presión para eliminar suciedad difícil en autos, pisos y paredes. Eficiencia y ahorro de agua garantizados.",
   "SECADOR AGUACATE": "Secador profesional con tecnología de aguacate y macadamia para un cabello más sedoso, brillante y libre de frizz.",
   "TOPE DE PUERTA": "Protege tus paredes y muebles de impactos accidentales. Diseño funcional y duradero ideal para cualquier habitación.",
@@ -85,6 +87,7 @@ export const PRODUCT_DESCRIPTIONS: Record<string, string> = {
 };
 
 export const PRODUCT_PRICES: Record<string, number> = {
+  "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": 110000,
   "HIDROLAVADORA": 55000,
   "SECADOR AGUACATE": 25000,
   "TOPE DE PUERTA": 8500,
@@ -108,7 +111,7 @@ export const PRODUCT_PRICES: Record<string, number> = {
   "ORGANIZADOR DUCHA 5PZS": 62900,
   "SET DE CUCHILLO X6 0238A": 33900,
   "ORGANIZADOR DE CALZADO 3 NIVELES": 28000,
-  "BARBERA GEEMY": 35000, // Actualizado: Mayorista 35000
+  "BARBERA GEEMY": 35000,
   "DIADEMA P9": 22000,
   "SET DE MALETA DE ARTE": 45000,
   "KIT ARTISTICO DE 208 PIEZAS": 29000,
@@ -127,6 +130,7 @@ export const PRODUCT_PRICES: Record<string, number> = {
 };
 
 export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
+  "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": 125000,
   "HIDROLAVADORA": 60000,
   "SECADOR AGUACATE": 29990,
   "TOPE DE PUERTA": 10000,
@@ -150,7 +154,7 @@ export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
   "ORGANIZADOR DUCHA 5PZS": 65000,
   "SET DE CUCHILLO X6 0238A": 35000,
   "ORGANIZADOR DE CALZADO 3 NIVELES": 33000,
-  "BARBERA GEEMY": 40000, // Actualizado: Detal 40000
+  "BARBERA GEEMY": 40000,
   "DIADEMA P9": 30000,
   "SET DE MALETA DE ARTE": 48000,
   "KIT ARTISTICO DE 208 PIEZAS": 35000,
@@ -169,6 +173,7 @@ export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
 };
 
 export const PRODUCT_STOCK: Record<string, number> = {
+  "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": 10,
   "HIDROLAVADORA": 5,
   "SECADOR AGUACATE": 7,
   "TOPE DE PUERTA": 2,
@@ -211,6 +216,9 @@ export const PRODUCT_STOCK: Record<string, number> = {
 };
 
 export const PRODUCT_ASSETS: Record<string, { image?: string; video?: string }> = {
+  "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": {
+    image: "https://smartjoys.co/wp-content/uploads/2025/11/COMBO-HidrolavadoraAspiradora-1.jpg"
+  },
   "HIDROLAVADORA": {
     image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/ce2d6631-097e-4fac-8707-0e40197b19e7.webp",
     video: "https://drive.google.com/file/d/1HKIaSPSWoxumicSZNkhA33pHoxP3U_aT/view?usp=sharing"
@@ -338,4 +346,5 @@ export const CATEGORY_COLORS: Record<string, string> = {
   'Cocina': 'bg-orange-100 text-orange-700',
   'Organización': 'bg-emerald-100 text-emerald-700',
   'Herramientas': 'bg-slate-100 text-slate-700',
+  'Combos': 'bg-amber-100 text-amber-700',
 };
