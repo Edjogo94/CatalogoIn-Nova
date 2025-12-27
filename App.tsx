@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Product, Category, CartItem } from './types';
 import { RAW_PRODUCT_NAMES, PRODUCT_ASSETS, PRODUCT_PRICES, PRODUCT_RETAIL_PRICES, PRODUCT_STOCK } from './constants';
@@ -6,7 +7,7 @@ import ProductCard from './components/ProductCard';
 import ProductModal from './components/ProductModal';
 import CartDrawer from './components/CartDrawer';
 
-const CACHE_KEY = 'innova_catalog_v47'; // Incrementado a v47 para aplicar cambios de precio
+const CACHE_KEY = 'innova_catalog_v48';
 
 const LogoHexagon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <div className={`${className} relative flex items-center justify-center`}>
@@ -38,6 +39,7 @@ const App: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<Category>(Category.ALL);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -50,40 +52,67 @@ const App: React.FC = () => {
         
         if (cachedData) {
           const parsed = JSON.parse(cachedData);
-          if (Array.isArray(parsed) && parsed.length === RAW_PRODUCT_NAMES.length) {
+          if (Array.isArray(parsed) && parsed.length > 0) {
             setProducts(parsed);
             setLoading(false);
             return;
           }
         }
 
-        const data = await enrichProductData(RAW_PRODUCT_NAMES);
-        const enriched = RAW_PRODUCT_NAMES.map((originalName, index) => {
-          const aiResult = data.products.find(p => p.originalIndex === index) || data.products[index];
+        // Crear datos base por si falla la API
+        const baseProducts = RAW_PRODUCT_NAMES.map((originalName, index) => {
           const assets = PRODUCT_ASSETS[originalName] || {};
-          const wholesalePrice = PRODUCT_PRICES[originalName] || (aiResult?.price || 0);
+          const wholesalePrice = PRODUCT_PRICES[originalName] || 0;
           const retailPrice = PRODUCT_RETAIL_PRICES[originalName] || Math.round(wholesalePrice * 1.2);
-          const stock = PRODUCT_STOCK[originalName] ?? 7;
+          const stock = PRODUCT_STOCK[originalName] ?? 5;
 
           return {
             id: `prod-${index}`,
-            name: aiResult?.name || originalName,
-            category: aiResult?.category || Category.HOME,
-            description: aiResult?.description || "Producto de alta calidad.",
+            name: originalName,
+            category: Category.HOME,
+            description: "Producto innovador de alta calidad.",
             price: wholesalePrice,
             retailPrice: retailPrice,
             stock: stock,
             image: assets.image || `https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800`,
-            features: aiResult?.features || ["Garantía de calidad", "Envío nacional", "Excelente precio"],
+            features: ["Garantía de calidad", "Envío nacional", "Excelente precio"],
             videoUrl: assets.video,
             originalIndex: index
           } as Product;
         });
 
-        localStorage.setItem(CACHE_KEY, JSON.stringify(enriched));
-        setProducts(enriched);
+        try {
+          const data = await enrichProductData(RAW_PRODUCT_NAMES);
+          const enriched = RAW_PRODUCT_NAMES.map((originalName, index) => {
+            const aiResult = data?.products?.find(p => p.originalIndex === index) || data?.products?.[index];
+            const assets = PRODUCT_ASSETS[originalName] || {};
+            const wholesalePrice = PRODUCT_PRICES[originalName] || (aiResult?.price || 0);
+            const retailPrice = PRODUCT_RETAIL_PRICES[originalName] || Math.round(wholesalePrice * 1.2);
+            const stock = PRODUCT_STOCK[originalName] ?? 7;
+
+            return {
+              id: `prod-${index}`,
+              name: aiResult?.name || originalName,
+              category: aiResult?.category || Category.HOME,
+              description: aiResult?.description || "Producto de alta calidad.",
+              price: wholesalePrice,
+              retailPrice: retailPrice,
+              stock: stock,
+              image: assets.image || `https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800`,
+              features: aiResult?.features || ["Garantía de calidad", "Envío nacional", "Excelente precio"],
+              videoUrl: assets.video,
+              originalIndex: index
+            } as Product;
+          });
+          setProducts(enriched);
+          localStorage.setItem(CACHE_KEY, JSON.stringify(enriched));
+        } catch (apiErr) {
+          console.warn("API de Gemini falló, usando datos base:", apiErr);
+          setProducts(baseProducts);
+        }
       } catch (err) {
-        console.error("Error cargando productos:", err);
+        console.error("Error crítico inicializando app:", err);
+        setError("Ocurrió un error al cargar el catálogo. Por favor recarga la página.");
       } finally {
         setLoading(false);
       }
@@ -131,6 +160,19 @@ const App: React.FC = () => {
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
         <LogoHexagon className="w-20 h-20 animate-bounce mb-6" />
         <p className="text-slate-400 text-[10px] font-black tracking-[0.5em] uppercase animate-pulse">In-Nova está llegando...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-6 text-center">
+        <div className="bg-red-50 text-red-500 p-8 rounded-[2rem] border border-red-100 max-w-md">
+          <svg className="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+          <p className="font-black uppercase tracking-widest text-sm mb-2">Error de Conexión</p>
+          <p className="text-xs font-medium opacity-80 mb-6">{error}</p>
+          <button onClick={() => window.location.reload()} className="bg-red-500 text-white px-8 py-3 rounded-xl font-bold uppercase tracking-widest text-[10px] hover:bg-red-600 transition-colors">Reintentar</button>
+        </div>
       </div>
     );
   }
@@ -196,6 +238,11 @@ const App: React.FC = () => {
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} onClick={setSelectedProduct} />
           ))}
+          {filteredProducts.length === 0 && (
+            <div className="col-span-full py-20 text-center">
+              <p className="text-slate-400 font-bold uppercase tracking-widest text-xs italic">No encontramos productos que coincidan</p>
+            </div>
+          )}
         </div>
       </main>
 
