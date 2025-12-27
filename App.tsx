@@ -6,7 +6,7 @@ import ProductCard from './components/ProductCard';
 import ProductModal from './components/ProductModal';
 import CartDrawer from './components/CartDrawer';
 
-const CACHE_KEY = 'innova_catalog_v61'; 
+const CACHE_KEY = 'innova_catalog_v62'; 
 
 const LogoHexagon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <div className={`${className} relative flex items-center justify-center`}>
@@ -31,12 +31,13 @@ const App: React.FC = () => {
       try {
         setLoading(true);
         
-        // Productos que el usuario agregó hoy específicamente para "Lo Nuevo"
-        const NEW_TODAY = ["HIDROLAVADORA", "SECADOR AGUACATE", "TOPE DE PUERTA", "CEPILLO SECADOR 5 EN 1"];
+        // Identificamos el índice de inicio para los últimos 12 productos
+        const lastTwelveStartIndex = Math.max(0, RAW_PRODUCT_NAMES.length - 12);
 
         const baseProducts: Product[] = RAW_PRODUCT_NAMES.map((name, index) => {
           const isCombo = name.toLowerCase().includes("combo");
-          const isNewToday = NEW_TODAY.includes(name);
+          // Es "Nuevo" si está entre los últimos 12 de la lista
+          const isRecentArrival = index >= lastTwelveStartIndex;
           
           return {
             id: `prod-${index}`,
@@ -50,7 +51,7 @@ const App: React.FC = () => {
             features: ["Calidad garantizada", "Envío rápido", "Mejor precio"],
             videoUrl: PRODUCT_ASSETS[name]?.video,
             originalIndex: index,
-            isNew: isNewToday, // Marcamos específicamente los de hoy
+            isNew: isRecentArrival, 
             isCombo: isCombo
           };
         });
@@ -182,7 +183,7 @@ const App: React.FC = () => {
           </section>
         )}
 
-        {/* Sección Lo Nuevo */}
+        {/* Sección Lo Nuevo (Dinámica: Últimos 12) */}
         {newArrivals.length > 0 && searchTerm === "" && (
           <section className="mb-12">
             <div className="flex items-center justify-between mb-6">
