@@ -42,6 +42,48 @@ export const RAW_PRODUCT_NAMES = [
   "SARTEN ANTIADHERENTE 3 ESPACIOS"
 ];
 
+export const PRODUCT_DESCRIPTIONS: Record<string, string> = {
+  "HIDROLAVADORA": "Potente limpieza a presión para eliminar suciedad difícil en autos, pisos y paredes. Eficiencia y ahorro de agua garantizados.",
+  "SECADOR AGUACATE": "Secador profesional con tecnología de aguacate y macadamia para un cabello más sedoso, brillante y libre de frizz.",
+  "TOPE DE PUERTA": "Protege tus paredes y muebles de impactos accidentales. Diseño funcional y duradero ideal para cualquier habitación.",
+  "CEPILLO SECADOR 5 EN 1": "Herramienta multifuncional para moldear tu cabello: seca, alisa y crea ondas perfectas con facilidad y protección térmica.",
+  "RELOJ DE PARED 3D 80 CM X 100 CM": "Transforma tu pared en una pieza de arte moderna. Reloj de gran formato con acabado elegante y montaje sencillo.",
+  "COMBO TAPETE ULTRA ABSORBENTE": "Tapetes de secado rápido que mantienen tu baño limpio y seguro gracias a su base antideslizante y absorción superior.",
+  "DISPENSADOR DE JABÓN MULTIFUNCIONAL": "Accesorio práctico y elegante para organizar tu baño o cocina, facilitando el lavado de manos con ahorro de jabón.",
+  "CÁMARA DE SEGURIDAD IK100": "Vigilancia inteligente con acceso remoto desde tu smartphone. Calidad de imagen nítida para tu tranquilidad y seguridad.",
+  "ESTANTE ESQUINERO DE BAÑO": "Almacenamiento vertical inteligente para organizar tus productos de aseo personal sin ocupar espacio extra en la ducha.",
+  "TUBO MULTIFUNCIONAL 90 A 160 CM": "Barra extensible versátil para cortinas o clósets, fabricada en materiales resistentes de fácil instalación a presión.",
+  "TUBO TENDEDERO PEQUEÑO 60 CM A 100 CM": "Tendedero compacto ideal para espacios reducidos, resistente al peso y de instalación rápida.",
+  "TUBO MULTIFUNCIONAL GRANDE 160 A 300 CM": "Barra de gran alcance para organizar clósets amplios o dividir espacios con cortinas pesadas de forma segura.",
+  "LAMPARA SOLAR PANEL 6000W": "Iluminación ecológica y potente para exteriores. Se carga con el sol y se activa automáticamente al anochecer.",
+  "PAPEL TAPIZ": "Renueva tus espacios de forma rápida y económica. Autoadhesivo, lavable y con texturas modernas que imitan materiales reales.",
+  "CINTA LED 5 METROS": "Iluminación ambiental personalizable con control remoto. Perfecta para decorar habitaciones, techos o detrás de televisores.",
+  "GRAMERA SF-400": "Precisión exacta para tus recetas o envíos. Compacta, fácil de limpiar y con función de tara para mayor comodidad.",
+  "ORGANIZADOR DE ROPA SUCIA 3 COMP": "Canasto triple con compartimentos para separar la ropa por colores, optimizando tu tiempo de lavandería.",
+  "REMOVEDOR DE MOTA ELECTRICO DELUXE": "Devuelve la vida a tus prendas favoritas. Elimina pelusas y motas de forma rápida y sin dañar los tejidos.",
+  "CINTA DOBLE FAX EXTRAFUERTE 3M": "Solución de montaje invisible y potente. Ideal para cuadros, espejos y accesorios sin necesidad de clavos o tornillos.",
+  "TERMO LICUADORA PORTÁTIL 1500ML": "Prepara jugos y batidos frescos donde sea. Batería recargable y diseño compacto de alta capacidad para tu día a día.",
+  "ORGANIZADOR DUCHA 5PZS": "Set completo de estantería metálica para tener todo al alcance de la mano y perfectamente ordenado en tu baño.",
+  "SET DE CUCHILLO X6 0238A": "Cuchillas de acero inoxidable de alta calidad con recubrimiento antiadherente para cortes precisos y duraderos en la cocina.",
+  "ORGANIZADOR DE CALZADO 3 NIVELES": "Maximiza el espacio de tu armario manteniendo tus zapatos ordenados y protegidos en tres prácticos niveles.",
+  "BARBERA GEEMY": "Máquina profesional para corte de cabello y barba con cuchillas ajustables para acabados impecables en casa.",
+  "DIADEMA P9": "Audífonos inalámbricos de alta fidelidad con diseño ergonómico y cancelación de ruido para una experiencia sonora inmersiva.",
+  "SET DE MALETA DE ARTE": "El regalo perfecto para pequeños artistas. Completo kit con colores, marcadores y acuarelas para fomentar la creatividad.",
+  "KIT ARTISTICO DE 208 PIEZAS": "Maletín gigante con todo lo necesario para dibujar y pintar profesionalmente. Incluye caballete portátil.",
+  "Waves - Altavoz Bluetooth, reproductor portátil de CD/vinilo, estilo vintage con luces ambientales, color blanco": "Altavoz con diseño retro de vinilo que combina estética vintage con sonido moderno y luces LED rítmicas.",
+  "AFILADOR DE CUCHILLO": "Recupera el filo de tus herramientas de cocina en segundos con un diseño ergonómico y seguro de tres etapas.",
+  "Ventilador de mano": "Aire fresco en cualquier lugar. Portátil, recargable y silencioso, ideal para viajes, oficinas o días calurosos.",
+  "Combo Smartwatch CN-RU3 ACME + Audífonos": "Tecnología vestible completa: monitorea tu salud y disfruta tu música favorita con este dúo inteligente de alto rendimiento.",
+  "Parlante Impermeable": "Sonido resistente al agua ideal para la ducha o piscina. Conexión bluetooth estable y ventosa de agarre fuerte.",
+  "TIJERAS LASER": "Cortes rectos y precisos garantizados gracias a la guía láser integrada. Ideal para costura y manualidades de oficina.",
+  "DISPENSADOR DE GRANOS": "Almacena y dosifica arroz, cereales o granos de forma hermética y organizada, manteniendo la frescura de tus alimentos.",
+  "CINTURON TÉRMICO": "Alivio natural para dolores lumbares o menstruales mediante calor terapéutico ajustable y cómodo de usar bajo la ropa.",
+  "MOLINILLO DE ESPECIAS": "Muele pimienta, sal marina o especias al instante para potenciar el sabor de tus comidas con frescura garantizada.",
+  "TAPETE DE GRIFO": "Evita salpicaduras y manchas de agua alrededor de tu lavamanos. Silicona de grado alimenticio que drena el agua hacia el fregadero.",
+  "ASPIRADORA DE MANO": "Limpieza rápida de migas, pelos de mascota y polvo en rincones difíciles o en el auto. Inalámbrica y potente.",
+  "SARTEN ANTIADHERENTE 3 ESPACIOS": "Cocina múltiples alimentos a la vez sin que se mezclen. Recubrimiento de piedra médica para cocinar con menos aceite."
+};
+
 export const PRODUCT_PRICES: Record<string, number> = {
   "HIDROLAVADORA": 55000,
   "SECADOR AGUACATE": 25000,
@@ -56,12 +98,12 @@ export const PRODUCT_PRICES: Record<string, number> = {
   "TUBO TENDEDERO PEQUEÑO 60 CM A 100 CM": 16900,
   "TUBO MULTIFUNCIONAL GRANDE 160 A 300 CM": 27900,
   "LAMPARA SOLAR PANEL 6000W": 31900,
-  "PAPEL TAPIZ": 9500, // Actualizado: Mayorista 9500
-  "CINTA LED 5 METROS": 14000, // Mayorista 14000
+  "PAPEL TAPIZ": 9500,
+  "CINTA LED 5 METROS": 14000,
   "GRAMERA SF-400": 11900,
   "ORGANIZADOR DE ROPA SUCIA 3 COMP": 37900,
   "REMOVEDOR DE MOTA ELECTRICO DELUXE": 16900,
-  "CINTA DOBLE FAX EXTRAFUERTE 3M": 7000,
+  "CINTA DOBLE FAX EXTRAFUERTE 3M": 7500, // Actualizado: Mayorista 7500
   "TERMO LICUADORA PORTÁTIL 1500ML": 32900,
   "ORGANIZADOR DUCHA 5PZS": 62900,
   "SET DE CUCHILLO X6 0238A": 33900,
@@ -98,8 +140,8 @@ export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
   "TUBO TENDEDERO PEQUEÑO 60 CM A 100 CM": 20000,
   "TUBO MULTIFUNCIONAL GRANDE 160 A 300 CM": 30000,
   "LAMPARA SOLAR PANEL 6000W": 35000,
-  "PAPEL TAPIZ": 11000, // Actualizado: Detal 11000
-  "CINTA LED 5 METROS": 17000, // Detal 17000
+  "PAPEL TAPIZ": 11000,
+  "CINTA LED 5 METROS": 17000,
   "GRAMERA SF-400": 13000,
   "ORGANIZADOR DE ROPA SUCIA 3 COMP": 40000,
   "REMOVEDOR DE MOTA ELECTRICO DELUXE": 20000,

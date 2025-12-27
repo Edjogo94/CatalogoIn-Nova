@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Product, Category, CartItem } from './types';
-import { RAW_PRODUCT_NAMES, PRODUCT_ASSETS, PRODUCT_PRICES, PRODUCT_RETAIL_PRICES, PRODUCT_STOCK } from './constants';
+import { RAW_PRODUCT_NAMES, PRODUCT_ASSETS, PRODUCT_PRICES, PRODUCT_RETAIL_PRICES, PRODUCT_STOCK, PRODUCT_DESCRIPTIONS } from './constants';
 import { enrichProductData } from './services/geminiService';
 import ProductCard from './components/ProductCard';
 import ProductModal from './components/ProductModal';
 import CartDrawer from './components/CartDrawer';
 
-const CACHE_KEY = 'innova_catalog_v50';
+const CACHE_KEY = 'innova_catalog_v55'; // Incrementamos versión por cambio de estructura
 
 const LogoHexagon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <div className={`${className} relative flex items-center justify-center`}>
@@ -32,12 +32,12 @@ const App: React.FC = () => {
       try {
         setLoading(true);
         
-        // 1. Cargar productos locales primero (resiliencia)
+        // 1. Cargar productos con descripciones funcionales por defecto
         const baseProducts = RAW_PRODUCT_NAMES.map((name, index) => ({
           id: `prod-${index}`,
           name: name,
           category: Category.HOME,
-          description: "Producto innovador de alta calidad para tu hogar.",
+          description: PRODUCT_DESCRIPTIONS[name] || "Producto innovador de alta calidad para tu hogar.",
           price: PRODUCT_PRICES[name] || 0,
           retailPrice: PRODUCT_RETAIL_PRICES[name] || 0,
           stock: PRODUCT_STOCK[name] || 5,
@@ -49,7 +49,7 @@ const App: React.FC = () => {
 
         setProducts(baseProducts);
 
-        // 2. Intentar cargar desde caché o API
+        // 2. Intentar cargar desde caché
         const cached = localStorage.getItem(CACHE_KEY);
         if (cached) {
           try {
@@ -62,7 +62,7 @@ const App: React.FC = () => {
           } catch(e) { console.error("Error parseando cache"); }
         }
 
-        // 3. Intentar enriquecer con Gemini
+        // 3. Intentar enriquecer con Gemini para optimizar marketing (opcional)
         const aiData = await enrichProductData(RAW_PRODUCT_NAMES);
         if (aiData && aiData.products && aiData.products.length > 0) {
           const enriched = baseProducts.map((p, idx) => {
@@ -72,7 +72,8 @@ const App: React.FC = () => {
                 ...p,
                 name: ai.name || p.name,
                 category: ai.category || p.category,
-                description: ai.description || p.description,
+                // Mantenemos la descripción funcional si la IA devuelve algo genérico
+                description: ai.description.length > 50 ? ai.description : p.description,
                 features: ai.features || p.features
               };
             }
@@ -82,7 +83,7 @@ const App: React.FC = () => {
           localStorage.setItem(CACHE_KEY, JSON.stringify(enriched));
         }
       } catch (err) {
-        console.error("Fallo crítico en carga de App:", err);
+        console.error("Fallo en inicialización:", err);
       } finally {
         setLoading(false);
       }
