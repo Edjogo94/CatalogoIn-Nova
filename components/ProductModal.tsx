@@ -11,6 +11,7 @@ interface ProductModalProps {
 
 const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCart }) => {
   const [quantity, setQuantity] = useState(1);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
 
   if (!product) return null;
 
@@ -34,23 +35,52 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
       <div className="bg-white w-full max-w-4xl rounded-[2.5rem] overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-300 flex flex-col md:flex-row max-h-[90vh]">
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 bg-white/90 backdrop-blur rounded-full p-2.5 hover:bg-slate-100 transition-all shadow-sm border border-slate-100"
+          className="absolute top-4 right-4 z-30 bg-white/90 backdrop-blur rounded-full p-2.5 hover:bg-slate-100 transition-all shadow-sm border border-slate-100"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
-        <div className="md:w-1/2 h-72 md:h-auto bg-slate-50 relative">
-          <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-          <div className="absolute bottom-6 left-6 flex flex-col gap-2">
-            {isWholesale && (
-              <div className="bg-emerald-500 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg animate-bounce">
-                ¡Precio Mayorista Aplicado!
+        <div className="md:w-1/2 h-72 md:h-auto bg-slate-50 relative group">
+          {product.videoUrl ? (
+            <video 
+              src={product.videoUrl} 
+              autoPlay 
+              loop 
+              muted={isVideoPlaying}
+              playsInline
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+          )}
+          
+          <div className="absolute bottom-6 left-6 right-6 flex flex-col gap-2 z-10">
+            <div className="flex justify-between items-end">
+              <div className="space-y-2">
+                {isWholesale && (
+                  <div className="bg-emerald-500 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg animate-bounce w-fit">
+                    ¡Precio Mayorista Aplicado!
+                  </div>
+                )}
+                <div className="bg-slate-900/80 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest backdrop-blur-sm shadow-lg w-fit">
+                  Unidades disponibles: {product.stock}
+                </div>
               </div>
-            )}
-            <div className="bg-slate-900/80 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest backdrop-blur-sm shadow-lg w-fit">
-              Unidades disponibles: {product.stock}
+              
+              {product.videoUrl && (
+                 <button 
+                  onClick={() => setIsVideoPlaying(!isVideoPlaying)}
+                  className="bg-white/90 backdrop-blur p-3 rounded-2xl shadow-lg hover:bg-cyan-500 hover:text-white transition-all"
+                 >
+                   {isVideoPlaying ? (
+                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" /></svg>
+                   ) : (
+                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
+                   )}
+                 </button>
+              )}
             </div>
           </div>
         </div>

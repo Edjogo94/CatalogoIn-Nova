@@ -1,13 +1,15 @@
+
 import React from 'react';
 import { Product } from '../types';
-import { CATEGORY_COLORS, WHATSAPP_PHONE } from '../constants';
+import { CATEGORY_COLORS } from '../constants';
 
 interface ProductCardProps {
   product: Product;
+  whatsappPhone: string;
   onClick: (product: Product) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, whatsappPhone, onClick }) => {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
@@ -19,7 +21,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
     const text = `¡Hola! Me interesa la *${product.name}* (Precio: ${formatPrice(product.retailPrice)}). ¿Tienen disponibilidad?`;
-    window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(text)}`, '_blank');
+    window.open(`https://wa.me/${whatsappPhone}?text=${encodeURIComponent(text)}`, '_blank');
   };
 
   return (
