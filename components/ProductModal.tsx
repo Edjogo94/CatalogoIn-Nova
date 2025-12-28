@@ -29,7 +29,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
   const isWholesale = quantity >= 5;
   const currentUnitPrice = isWholesale ? product.price : product.retailPrice;
   const totalPrice = currentUnitPrice * quantity;
-  const totalSavings = isWholesale ? (product.retailPrice - product.price) * quantity : 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
@@ -62,11 +61,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
               <div className="space-y-2">
                 {isWholesale && (
                   <div className="bg-emerald-500 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-lg animate-bounce w-fit">
-                    ¡Ahorras {formatPrice(totalSavings)}!
+                    ¡Precio Mayorista Aplicado!
                   </div>
                 )}
                 <div className="bg-slate-900/80 text-white px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest backdrop-blur-sm shadow-lg w-fit">
-                  Disponibles: {product.stock}
+                  Unidades disponibles: {product.stock}
                 </div>
               </div>
               
@@ -95,19 +94,18 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
           </div>
 
           <div className="bg-slate-50 rounded-3xl p-6 mb-8 border border-slate-100">
-            <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="flex flex-col">
-                    <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Precio Detal</span>
-                    <span className={`text-xl font-black ${!isWholesale ? 'text-slate-900' : 'text-slate-400 line-through'}`}>
-                        {formatPrice(product.retailPrice)}
-                    </span>
-                </div>
-                <div className="flex flex-col border-l border-slate-200 pl-4">
-                    <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest mb-1">Precio Mayor (5+)</span>
-                    <span className={`text-xl font-black ${isWholesale ? 'text-emerald-600' : 'text-slate-400'}`}>
-                        {formatPrice(product.price)}
-                    </span>
-                </div>
+            <div className="flex justify-between items-center mb-4">
+              <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
+                {isWholesale ? 'Precio Mayorista' : 'Precio al Detal'}
+              </span>
+              <div className="flex flex-col items-end">
+                <span className={`text-2xl font-black ${isWholesale ? 'text-emerald-600' : 'text-slate-900'}`}>
+                  {formatPrice(currentUnitPrice)}
+                </span>
+                {!isWholesale && product.stock >= 5 && (
+                  <span className="text-[9px] font-bold text-slate-400 mt-1 italic">Lleva 5 o más para precio mayorista</span>
+                )}
+              </div>
             </div>
             
             <div className="flex items-center justify-between pt-4 border-t border-slate-200/60">
@@ -135,15 +133,15 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
           <div className="mb-8">
             <div className="flex justify-between items-end mb-6">
               <div>
-                <p className="text-[10px] font-black text-cyan-600 uppercase tracking-widest mb-1">Total a Pagar</p>
+                <p className="text-[10px] font-black text-cyan-600 uppercase tracking-widest mb-1">Total</p>
                 <p className={`text-4xl font-black tracking-tighter ${isWholesale ? 'text-emerald-600' : 'text-slate-900'}`}>
                   {formatPrice(totalPrice)}
                 </p>
               </div>
               {isWholesale && (
                 <div className="text-right pb-1">
-                  <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">
-                    Ahorro Mayorista
+                  <span className="text-[9px] font-black text-emerald-500 uppercase line-through opacity-50">
+                    {formatPrice(product.retailPrice * quantity)}
                   </span>
                 </div>
               )}
@@ -151,15 +149,15 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose, onAddToCa
 
             <button 
               onClick={() => onAddToCart(product, quantity)}
-              className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-center shadow-xl shadow-slate-200 hover:bg-emerald-600 transition-all active:scale-95 uppercase tracking-widest flex items-center justify-center gap-3"
+              className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-center shadow-xl shadow-slate-200 hover:bg-cyan-600 transition-all active:scale-95 uppercase tracking-widest flex items-center justify-center gap-3"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
-              Confirmar e Ir al Carrito
+              Agregar al Carrito
             </button>
           </div>
 
           <div className="border-t border-slate-100 pt-6">
-            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Sobre este producto</h4>
+            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Descripción</h4>
             <p className="text-slate-600 leading-relaxed text-sm font-medium">{product.description}</p>
           </div>
         </div>
