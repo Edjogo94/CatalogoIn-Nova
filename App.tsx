@@ -59,6 +59,7 @@ const App: React.FC = () => {
         if (savedDB) {
           currentProducts = JSON.parse(savedDB);
         } else {
+          // Tomar los últimos 12 para marcarlos como nuevos inicialmente
           const lastTwelveStartIndex = Math.max(0, RAW_PRODUCT_NAMES.length - 12);
           currentProducts = RAW_PRODUCT_NAMES.map((name, index) => {
             const isCombo = name.toLowerCase().includes("combo");
@@ -96,7 +97,8 @@ const App: React.FC = () => {
     const doc = new jsPDF({
       orientation: "portrait",
       unit: "mm",
-      format: "a4"
+      format: "a4",
+      compress: true
     });
 
     const pageWidth = doc.internal.pageSize.getWidth();
@@ -112,10 +114,9 @@ const App: React.FC = () => {
 
     const getImageData = (url: string): Promise<string> => {
       return new Promise((resolve) => {
-        if (!url || url.includes('unsplash.com')) { resolve(""); return; }
-        
-        // Anti-CORS simple
-        const proxyUrl = url.includes('?') ? `${url}&v=2` : `${url}?v=2`;
+        if (!url) { resolve(""); return; }
+        // Si ya es base64, lo devolvemos tal cual
+        if (url.startsWith('data:')) { resolve(url); return; }
         
         const img = new Image();
         img.crossOrigin = "Anonymous";
@@ -123,7 +124,8 @@ const App: React.FC = () => {
           const canvas = document.createElement("canvas");
           const ctx = canvas.getContext("2d");
           if (!ctx) { resolve(""); return; }
-          const maxDim = 500;
+          // Calidad reducida para PDF móvil rápido
+          const maxDim = 400;
           let w = img.width, h = img.height;
           if (w > maxDim || h > maxDim) {
             if (w > h) { h = (maxDim / w) * h; w = maxDim; }
@@ -131,11 +133,11 @@ const App: React.FC = () => {
           }
           canvas.width = w; canvas.height = h;
           ctx.drawImage(img, 0, 0, w, h);
-          try { resolve(canvas.toDataURL("image/jpeg", 0.75)); } catch (e) { resolve(""); }
+          try { resolve(canvas.toDataURL("image/jpeg", 0.6)); } catch (e) { resolve(""); }
         };
         img.onerror = () => resolve("");
-        setTimeout(() => resolve(""), 7000);
-        img.src = proxyUrl;
+        setTimeout(() => resolve(""), 5000);
+        img.src = url;
       });
     };
 
@@ -145,88 +147,62 @@ const App: React.FC = () => {
     const cx = pageWidth / 2;
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(60);
+    doc.setFontSize(50);
     doc.text("IN-NOVA", cx, pageHeight/2.5, { align: "center" });
     doc.setFontSize(14);
     doc.setTextColor(colors.cyan[0], colors.cyan[1], colors.cyan[2]);
-    doc.text("DISTRIBUCIONES MAYORISTAS", cx, pageHeight/2.5 + 12, { align: "center", charSpace: 2 });
+    doc.text("DISTRIBUCIONES 2025", cx, pageHeight/2.5 + 12, { align: "center", charSpace: 2 });
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(22);
-    doc.text("CATÁLOGO 2025", cx, pageHeight - 60, { align: "center" });
-    doc.setFontSize(12);
-    doc.text(`WhatsApp de Pedidos: +${whatsappPhone}`, cx, pageHeight - 35, { align: "center" });
+    doc.setFontSize(20);
+    doc.text("CATÁLOGO PARA CELULAR", cx, pageHeight - 60, { align: "center" });
 
     // PRODUCTOS
     const activeProducts = products.filter(p => p.stock > 0);
     const colWidth = (pageWidth - (margin * 3)) / 2;
-    const cardHeight = 112;
-    let currentY = 35;
+    const cardHeight = 110;
+    let currentY = 30;
     let column = 0;
 
     for (let i = 0; i < activeProducts.length; i++) {
       const p = activeProducts[i];
       if (i % 4 === 0) {
         doc.addPage();
-        doc.setFillColor(252, 252, 254);
+        doc.setFillColor(255, 255, 255);
         doc.rect(0, 0, pageWidth, pageHeight, 'F');
         doc.setFillColor(colors.navy[0], colors.navy[1], colors.navy[2]);
-        doc.rect(0, 0, pageWidth, 20, 'F');
+        doc.rect(0, 0, pageWidth, 15, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(10);
-        doc.text("IN-NOVA DISTRIBUCIONES", margin, 13);
-        doc.text(`PÁG ${doc.internal.getNumberOfPages()}`, pageWidth - margin, 13, { align: "right" });
-        currentY = 32; column = 0;
+        doc.setFontSize(9);
+        doc.text("IN-NOVA DISTRIBUCIONES", margin, 10);
+        currentY = 25; column = 0;
       }
 
       const x = margin + (column * (colWidth + margin));
-      doc.setFillColor(255, 255, 255);
-      doc.setDrawColor(230, 230, 230);
-      doc.roundedRect(x, currentY, colWidth, cardHeight - 8, 3, 3, 'FD');
+      doc.setDrawColor(240, 240, 240);
+      doc.roundedRect(x, currentY, colWidth, cardHeight - 10, 2, 2, 'D');
 
-      // Imagen
-      doc.setFillColor(245, 245, 248);
-      doc.rect(x + 2, currentY + 2, colWidth - 4, 58, 'F');
       const img = await getImageData(p.image);
       if (img) {
-        try { doc.addImage(img, 'JPEG', x + 4, currentY + 4, colWidth - 8, 54); } catch (e) {}
-      } else {
-        doc.setTextColor(200, 200, 200);
-        doc.setFontSize(8);
-        doc.text("FOTO EN CATÁLOGO WEB", x + colWidth/2, currentY + 30, { align: "center" });
+        try { doc.addImage(img, 'JPEG', x + 2, currentY + 2, colWidth - 4, 55); } catch (e) {}
       }
 
-      // Info
-      doc.setTextColor(colors.navy[0], colors.navy[1], colors.navy[2]);
+      doc.setTextColor(0, 0, 0);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(9.5);
-      const nameL = doc.splitTextToSize(p.name.toUpperCase(), colWidth - 8);
-      doc.text(nameL, x + 4, currentY + 68);
+      doc.setFontSize(8);
+      const nameL = doc.splitTextToSize(p.name.toUpperCase(), colWidth - 4);
+      doc.text(nameL, x + 2, currentY + 62);
 
-      doc.setTextColor(colors.slate[0], colors.slate[1], colors.slate[2]);
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7);
-      const dL = doc.splitTextToSize(p.description, colWidth - 8);
-      doc.text(dL.slice(0, 2), x + 4, currentY + 78);
-
-      // Precios
-      doc.setDrawColor(colors.cyan[0], colors.cyan[1], colors.cyan[2]);
-      doc.line(x + 4, currentY + 88, x + colWidth - 4, currentY + 88);
-      doc.setTextColor(colors.navy[0], colors.navy[1], colors.navy[2]);
-      doc.setFontSize(11);
-      doc.setFont("helvetica", "bold");
-      doc.text(formatPrice(p.retailPrice), x + 4, currentY + 95);
-      doc.setFontSize(6);
-      doc.text("AL DETAL", x + 4, currentY + 99);
       doc.setTextColor(colors.cyan[0], colors.cyan[1], colors.cyan[2]);
       doc.setFontSize(10);
-      doc.text(formatPrice(p.price), x + colWidth - 4, currentY + 95, { align: "right" });
+      doc.text(formatPrice(p.retailPrice), x + 2, currentY + 75);
       doc.setFontSize(6);
-      doc.text("AL MAYOR", x + colWidth - 4, currentY + 99, { align: "right" });
+      doc.text("PRECIO DETAL", x + 2, currentY + 78);
 
       if (column === 0) { column = 1; } else { column = 0; currentY += cardHeight; }
     }
 
-    doc.save(`Catalogo_InNova_2025.pdf`);
+    // Guardar para móvil
+    doc.save(`Catalogo_InNova_Movil.pdf`);
     setIsGeneratingPdf(false);
   };
 
@@ -255,7 +231,7 @@ const App: React.FC = () => {
   };
 
   const deleteProduct = (id: string) => {
-    if (confirm("¿Eliminar?")) {
+    if (confirm("¿Eliminar producto?")) {
       const n = products.filter(p => p.id !== id);
       setProducts(n);
       localStorage.setItem(DB_KEY, JSON.stringify(n));
@@ -297,6 +273,10 @@ const App: React.FC = () => {
     localStorage.setItem(SALES_KEY, JSON.stringify(nH));
   };
 
+  const newArrivals = useMemo(() => {
+    return products.filter(p => p.isNew).slice(0, 12);
+  }, [products]);
+
   const filteredProducts = useMemo(() => {
     return products.filter(p => {
       const mC = selectedCategory === Category.ALL || p.category === selectedCategory;
@@ -310,34 +290,42 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 relative">
       {isAdmin && (
-        <div className="fixed top-20 left-4 z-[60] flex flex-col gap-2">
-          <button onClick={() => setAdminView(!adminView)} className="bg-cyan-500 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg">
-            {adminView ? 'Cerrar Panel' : 'Administrar'}
+        <div className="fixed bottom-6 right-6 z-[60]">
+          <button 
+            onClick={() => setAdminView(!adminView)} 
+            className="bg-slate-900 text-cyan-400 p-4 rounded-full shadow-2xl border border-cyan-400/20 flex items-center gap-2 hover:scale-110 transition-transform"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+            <span className="text-[10px] font-black uppercase tracking-widest">{adminView ? 'Cerrar' : 'Panel'}</span>
           </button>
         </div>
       )}
 
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100 px-4 py-4">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setAdminView(false)}>
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => { setAdminView(false); setSelectedCategory(Category.ALL); setSearchTerm(''); }}>
             <LogoHexagon className="w-10 h-10" />
             <h1 className="hidden sm:block text-xl font-black uppercase tracking-tighter text-slate-900">In-Nova</h1>
           </div>
           
           <div className="relative flex-1 max-w-md">
-            <input type="text" placeholder="Buscar productos..." className="w-full bg-slate-100 rounded-xl py-2 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-cyan-500/20" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
-            <svg className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" placeholder="Buscar..." className="w-full bg-slate-100 rounded-2xl py-2.5 pl-10 pr-4 text-sm outline-none focus:ring-2 focus:ring-cyan-500/20 border-none" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+            <svg className="absolute left-3 top-3 h-4 w-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
           </div>
 
           <div className="flex items-center gap-2">
             {!adminView && (
-              <button onClick={downloadCatalogPdf} disabled={isGeneratingPdf} className="hidden sm:flex items-center gap-2 bg-white text-slate-900 px-4 py-2.5 rounded-xl border border-slate-200 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
-                {isGeneratingPdf ? <div className="animate-spin rounded-full h-3 w-3 border-2 border-slate-900 border-t-transparent" /> : <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>}
-                {isGeneratingPdf ? 'Procesando...' : 'Catálogo PDF'}
+              <button 
+                onClick={downloadCatalogPdf} 
+                disabled={isGeneratingPdf} 
+                className="bg-cyan-500 text-white p-2.5 rounded-2xl shadow-lg shadow-cyan-100 flex items-center gap-2 hover:bg-cyan-600 transition-colors disabled:opacity-50"
+              >
+                {isGeneratingPdf ? <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" /> : <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>}
+                <span className="hidden sm:inline text-[10px] font-black uppercase tracking-widest">{isGeneratingPdf ? 'Generando...' : 'Catálogo PDF'}</span>
               </button>
             )}
-            <button onClick={() => setIsAdminModalOpen(true)} className={`p-2.5 rounded-xl ${isAdmin ? 'bg-cyan-500 text-white' : 'bg-slate-100 text-slate-400'}`}><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg></button>
-            <button onClick={() => setIsCartOpen(true)} className="bg-slate-900 text-white p-2.5 rounded-xl relative"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>{cart.length > 0 && <span className="absolute -top-1 -right-1 bg-cyan-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border-2 border-white">{cart.reduce((a,b)=>a+b.quantity,0)}</span>}</button>
+            <button onClick={() => setIsAdminModalOpen(true)} className={`p-2.5 rounded-2xl ${isAdmin ? 'bg-slate-900 text-cyan-400' : 'bg-slate-100 text-slate-400'}`}><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg></button>
+            <button onClick={() => setIsCartOpen(true)} className="bg-slate-900 text-white p-2.5 rounded-2xl relative"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>{cart.length > 0 && <span className="absolute -top-1 -right-1 bg-cyan-500 text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full border-2 border-white">{cart.reduce((a,b)=>a+b.quantity,0)}</span>}</button>
           </div>
         </div>
       </header>
@@ -346,16 +334,49 @@ const App: React.FC = () => {
         {adminView && isAdmin ? (
           <AdminDashboard products={products} sales={sales} whatsappPhone={whatsappPhone} onUpdateProduct={updateProduct} onAddProduct={addProduct} onDeleteProduct={deleteProduct} onUpdateSettings={(p) => { setWhatsappPhone(p); localStorage.setItem(SETTINGS_KEY, JSON.stringify({ phone: p })); }} onClearSales={() => { setSales([]); localStorage.removeItem(SALES_KEY); }} />
         ) : (
-          <section>
-            <div className="flex gap-2 overflow-x-auto pb-4 mb-8 no-scrollbar">
-              {Object.values(Category).map(cat => (
-                <button key={cat} onClick={() => setSelectedCategory(cat)} className={`px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${selectedCategory === cat ? 'bg-slate-900 text-white' : 'bg-white text-slate-400 border border-slate-100'}`}>{cat}</button>
-              ))}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {filteredProducts.map(p => <ProductCard key={p.id} product={p} whatsappPhone={whatsappPhone} onClick={setSelectedProduct} />)}
-            </div>
-          </section>
+          <div className="space-y-12">
+            {/* Sección Lo Nuevo */}
+            {newArrivals.length > 0 && searchTerm === '' && selectedCategory === Category.ALL && (
+              <section className="animate-in slide-in-from-bottom duration-700">
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="bg-cyan-500 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">Lo Nuevo</span>
+                  <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Novedades In-Nova</h2>
+                </div>
+                <div className="flex gap-4 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+                  {newArrivals.map(p => (
+                    <div key={p.id} onClick={() => setSelectedProduct(p)} className="min-w-[200px] sm:min-w-[240px] bg-white rounded-[2rem] p-4 border border-slate-100 shadow-sm hover:shadow-xl transition-all cursor-pointer group">
+                      <div className="aspect-square rounded-2xl overflow-hidden bg-slate-50 mb-4">
+                        <img src={p.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={p.name} />
+                      </div>
+                      <h4 className="font-black text-slate-900 text-xs uppercase truncate mb-1">{p.name}</h4>
+                      <p className="text-cyan-600 font-black text-lg tracking-tighter">${new Intl.NumberFormat('es-CO').format(p.retailPrice)}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Catálogo General */}
+            <section>
+              <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+                <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Explorar Catálogo</h2>
+                <div className="flex gap-2 overflow-x-auto no-scrollbar">
+                  {Object.values(Category).map(cat => (
+                    <button key={cat} onClick={() => setSelectedCategory(cat)} className={`px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${selectedCategory === cat ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-100'}`}>{cat}</button>
+                  ))}
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {filteredProducts.map(p => <ProductCard key={p.id} product={p} whatsappPhone={whatsappPhone} onClick={setSelectedProduct} />)}
+                {filteredProducts.length === 0 && (
+                  <div className="col-span-full py-20 text-center space-y-4">
+                    <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">No se encontraron productos</p>
+                    <button onClick={() => { setSelectedCategory(Category.ALL); setSearchTerm(''); }} className="text-cyan-600 font-black text-[10px] uppercase tracking-[0.2em] underline">Ver todo el catálogo</button>
+                  </div>
+                )}
+              </div>
+            </section>
+          </div>
         )}
       </main>
 
