@@ -103,45 +103,68 @@ const App: React.FC = () => {
 
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 12;
+    const margin = 10;
     const colors = {
       navy: [15, 23, 42],
       cyan: [6, 182, 212],
-      slate: [100, 116, 139]
+      slate: [100, 116, 139],
+      emerald: [16, 185, 129]
     };
 
     const formatPrice = (p: number) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p);
 
     const getImageData = (url: string): Promise<string> => {
-      return new Promise((resolve) => {
+      return new Promise(async (resolve) => {
         if (!url) { resolve(""); return; }
-        // Si ya es base64, lo devolvemos tal cual
         if (url.startsWith('data:')) { resolve(url); return; }
-        
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
-          if (!ctx) { resolve(""); return; }
-          // Calidad reducida para PDF móvil rápido
-          const maxDim = 400;
-          let w = img.width, h = img.height;
-          if (w > maxDim || h > maxDim) {
-            if (w > h) { h = (maxDim / w) * h; w = maxDim; }
-            else { w = (maxDim / h) * w; h = maxDim; }
-          }
-          canvas.width = w; canvas.height = h;
-          ctx.drawImage(img, 0, 0, w, h);
-          try { resolve(canvas.toDataURL("image/jpeg", 0.6)); } catch (e) { resolve(""); }
+
+        const loadImage = (src: string): Promise<HTMLImageElement> => {
+          return new Promise((res, rej) => {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.onload = () => res(img);
+            img.onerror = rej;
+            img.src = src;
+          });
         };
-        img.onerror = () => resolve("");
-        setTimeout(() => resolve(""), 5000);
-        img.src = url;
+
+        const processImage = (img: HTMLImageElement) => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            if (!ctx) { resolve(""); return; }
+            
+            const maxDim = 400;
+            let w = img.width, h = img.height;
+            if (w > maxDim || h > maxDim) {
+                if (w > h) { h = (maxDim / w) * h; w = maxDim; }
+                else { w = (maxDim / h) * w; h = maxDim; }
+            }
+            
+            canvas.width = w;
+            canvas.height = h;
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(img, 0, 0, w, h);
+            try { resolve(canvas.toDataURL("image/jpeg", 0.75)); } catch (e) { resolve(""); }
+        };
+
+        try {
+          const cleanUrl = url.replace(/^https?:\/\//, '');
+          const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}&w=400&output=jpg&q=80`;
+          let img = await loadImage(proxyUrl);
+          processImage(img);
+        } catch (e) {
+          try {
+             let img = await loadImage(url);
+             processImage(img);
+          } catch (err) {
+             resolve("");
+          }
+        }
       });
     };
 
-    // PORTADA
+    // --- PÁGINA 1: PORTADA ---
     doc.setFillColor(colors.navy[0], colors.navy[1], colors.navy[2]);
     doc.rect(0, 0, pageWidth, pageHeight, 'F');
     const cx = pageWidth / 2;
@@ -153,56 +176,92 @@ const App: React.FC = () => {
     doc.setTextColor(colors.cyan[0], colors.cyan[1], colors.cyan[2]);
     doc.text("DISTRIBUCIONES 2025", cx, pageHeight/2.5 + 12, { align: "center", charSpace: 2 });
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
-    doc.text("CATÁLOGO PARA CELULAR", cx, pageHeight - 60, { align: "center" });
+    doc.setFontSize(16);
+    doc.text("CATÁLOGO DE PRECIOS", cx, pageHeight - 60, { align: "center" });
+    doc.setFontSize(10);
+    doc.text("Detal & Mayorista", cx, pageHeight - 53, { align: "center" });
 
-    // PRODUCTOS
+    // --- PÁGINAS DE PRODUCTOS ---
+    doc.addPage(); // Forzar nueva página para productos
+
     const activeProducts = products.filter(p => p.stock > 0);
     const colWidth = (pageWidth - (margin * 3)) / 2;
     const cardHeight = 110;
-    let currentY = 30;
+    
+    // Función para resetear cabecera de página
+    const drawHeader = () => {
+      doc.setFillColor(colors.navy[0], colors.navy[1], colors.navy[2]);
+      doc.rect(0, 0, pageWidth, 15, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text("IN-NOVA DISTRIBUCIONES - CATÁLOGO OFICIAL", margin, 10);
+    };
+
+    drawHeader();
+    let currentY = 25;
     let column = 0;
 
     for (let i = 0; i < activeProducts.length; i++) {
       const p = activeProducts[i];
-      if (i % 4 === 0) {
+      
+      // Control de salto de página (4 productos por página para que quepan bien)
+      if (i > 0 && i % 4 === 0) {
         doc.addPage();
-        doc.setFillColor(255, 255, 255);
-        doc.rect(0, 0, pageWidth, pageHeight, 'F');
-        doc.setFillColor(colors.navy[0], colors.navy[1], colors.navy[2]);
-        doc.rect(0, 0, pageWidth, 15, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(9);
-        doc.text("IN-NOVA DISTRIBUCIONES", margin, 10);
-        currentY = 25; column = 0;
+        drawHeader();
+        currentY = 25; 
+        column = 0;
       }
 
       const x = margin + (column * (colWidth + margin));
+      
+      // Borde de la tarjeta
       doc.setDrawColor(240, 240, 240);
-      doc.roundedRect(x, currentY, colWidth, cardHeight - 10, 2, 2, 'D');
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(x, currentY, colWidth, cardHeight - 10, 3, 3, 'FD');
 
+      // Imagen
       const img = await getImageData(p.image);
       if (img) {
         try { doc.addImage(img, 'JPEG', x + 2, currentY + 2, colWidth - 4, 55); } catch (e) {}
       }
 
+      // Nombre
       doc.setTextColor(0, 0, 0);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(8);
       const nameL = doc.splitTextToSize(p.name.toUpperCase(), colWidth - 4);
       doc.text(nameL, x + 2, currentY + 62);
 
+      // Precios - Diseño en dos columnas dentro de la tarjeta
+      const midPoint = x + (colWidth / 2);
+
+      // Precio Detal (Izquierda)
       doc.setTextColor(colors.cyan[0], colors.cyan[1], colors.cyan[2]);
       doc.setFontSize(10);
-      doc.text(formatPrice(p.retailPrice), x + 2, currentY + 75);
-      doc.setFontSize(6);
-      doc.text("PRECIO DETAL", x + 2, currentY + 78);
+      doc.text(formatPrice(p.retailPrice), x + 2, currentY + 82);
+      doc.setFontSize(5);
+      doc.setTextColor(colors.slate[0], colors.slate[1], colors.slate[2]);
+      doc.text("PRECIO DETAL", x + 2, currentY + 86);
 
-      if (column === 0) { column = 1; } else { column = 0; currentY += cardHeight; }
+      // Precio Mayor (Derecha)
+      doc.setTextColor(colors.emerald[0], colors.emerald[1], colors.emerald[2]);
+      doc.setFontSize(10);
+      doc.text(formatPrice(p.price), midPoint, currentY + 82);
+      doc.setFontSize(5);
+      doc.setTextColor(colors.slate[0], colors.slate[1], colors.slate[2]);
+      doc.text("PRECIO MAYOR", midPoint, currentY + 86);
+
+      if (column === 0) { 
+        column = 1; 
+      } else { 
+        column = 0; 
+        currentY += cardHeight; 
+      }
     }
 
-    // Guardar para móvil
-    doc.save(`Catalogo_InNova_Movil.pdf`);
+    // Guardar
+    doc.save(`Catalogo_InNova_Completo.pdf`);
     setIsGeneratingPdf(false);
   };
 
@@ -358,8 +417,19 @@ const App: React.FC = () => {
 
             {/* Catálogo General */}
             <section>
-              <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-                <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Explorar Catálogo</h2>
+              <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
+                <div>
+                  <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Explorar Catálogo</h2>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="relative flex h-2.5 w-2.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
+                      <span className="text-slate-900 font-black">{products.length}</span> Artículos Distintos Disponibles
+                    </p>
+                  </div>
+                </div>
                 <div className="flex gap-2 overflow-x-auto no-scrollbar">
                   {Object.values(Category).map(cat => (
                     <button key={cat} onClick={() => setSelectedCategory(cat)} className={`px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${selectedCategory === cat ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-400 border border-slate-100'}`}>{cat}</button>
