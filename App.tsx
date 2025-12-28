@@ -89,7 +89,9 @@ const App: React.FC = () => {
   }, []);
 
   const downloadCatalogPdf = async () => {
+    if (isGeneratingPdf) return;
     setIsGeneratingPdf(true);
+    
     const doc = new jsPDF({
       orientation: "portrait",
       unit: "mm",
@@ -108,24 +110,39 @@ const App: React.FC = () => {
 
     const formatPrice = (p: number) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(p);
 
-    const loadImageBase64 = (url: string): Promise<string> => {
+    const getImageData = (url: string): Promise<string> => {
       return new Promise((resolve) => {
+        // Añadimos cache-busting para evitar bloqueos de CDN/CORS
+        const cleanUrl = url.includes('?') ? `${url}&t=${Date.now()}` : `${url}?t=${Date.now()}`;
+        
         const img = new Image();
         img.crossOrigin = "Anonymous";
         img.onload = () => {
           const canvas = document.createElement("canvas");
-          canvas.width = img.width;
-          canvas.height = img.height;
           const ctx = canvas.getContext("2d");
-          if (ctx) {
-            ctx.drawImage(img, 0, 0);
-            resolve(canvas.toDataURL("image/jpeg", 0.7));
-          } else {
-            resolve("");
+          if (!ctx) { resolve(""); return; }
+          
+          // Redimensionar para optimizar peso del PDF
+          const maxDim = 600;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = (maxDim / w) * h; w = maxDim; }
+            else { w = (maxDim / h) * w; h = maxDim; }
           }
+          
+          canvas.width = w;
+          canvas.height = h;
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL("image/jpeg", 0.8));
         };
-        img.onerror = () => resolve("");
-        img.src = url;
+        img.onerror = () => {
+          console.warn("Fallo imagen:", url);
+          resolve("");
+        };
+        // Tiempo de espera para carga
+        setTimeout(() => resolve(""), 10000);
+        img.src = cleanUrl;
       });
     };
 
@@ -133,34 +150,35 @@ const App: React.FC = () => {
     doc.setFillColor(colors.navy[0], colors.navy[1], colors.navy[2]);
     doc.rect(0, 0, pageWidth, pageHeight, 'F');
     
-    // Logo y Título
-    doc.setDrawColor(colors.cyan[0], colors.cyan[1], colors.cyan[2]);
-    doc.setLineWidth(1.5);
     const cx = pageWidth / 2;
     const cy = pageHeight / 2.5;
     
+    // Logo y Título Portada
     doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(50);
+    doc.setFontSize(55);
     doc.text("IN-NOVA", cx, cy, { align: "center" });
 
     doc.setFontSize(16);
     doc.setTextColor(colors.cyan[0], colors.cyan[1], colors.cyan[2]);
-    doc.text("DISTRIBUCIONES PREMIUM", cx, cy + 12, { align: "center" });
+    doc.text("DISTRIBUCIONES PREMIUM", cx, cy + 12, { align: "center", charSpace: 3 });
 
-    doc.setFillColor(colors.cyan[0], colors.cyan[1], colors.cyan[2]);
-    doc.rect(cx - 30, cy + 18, 60, 1, 'F');
+    doc.setDrawColor(colors.cyan[0], colors.cyan[1], colors.cyan[2]);
+    doc.setLineWidth(1);
+    doc.line(cx - 30, cy + 20, cx + 30, cy + 20);
 
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(22);
-    doc.text("CATÁLOGO 2025", cx, pageHeight - 60, { align: "center" });
+    doc.setFontSize(24);
+    doc.text("CATÁLOGO OFICIAL 2025", cx, pageHeight - 60, { align: "center" });
     
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text("Tecnología • Hogar • Innovación", cx, pageHeight - 50, { align: "center" });
+    doc.text("Hogar • Tecnología • Innovación", cx, pageHeight - 52, { align: "center" });
     
     doc.setFont("helvetica", "bold");
-    doc.text(`WhatsApp de Pedidos: +${whatsappPhone}`, cx, pageHeight - 30, { align: "center" });
+    doc.setFontSize(13);
+    doc.setTextColor(colors.cyan[0], colors.cyan[1], colors.cyan[2]);
+    doc.text(`WhatsApp: +${whatsappPhone}`, cx, pageHeight - 35, { align: "center" });
 
     // --- PRODUCTOS ---
     const activeProducts = products.filter(p => p.stock > 0);
@@ -172,45 +190,50 @@ const App: React.FC = () => {
     for (let i = 0; i < activeProducts.length; i++) {
       const p = activeProducts[i];
       
-      // Control de nueva página
-      if (i % 4 === 0) {
+      if (i % 4 === 0) { // 4 productos por página
         doc.addPage();
-        // Fondo de página suave
-        doc.setFillColor(252, 252, 252);
+        doc.setFillColor(252, 252, 254);
         doc.rect(0, 0, pageWidth, pageHeight, 'F');
         
-        // Header interno
         doc.setFillColor(colors.navy[0], colors.navy[1], colors.navy[2]);
-        doc.rect(0, 0, pageWidth, 20, 'F');
+        doc.rect(0, 0, pageWidth, 22, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(10);
-        doc.text("IN-NOVA DISTRIBUCIONES", margin, 13);
-        doc.text(`CATÁLOGO 2025`, pageWidth - margin, 13, { align: "right" });
-        currentY = 35;
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "bold");
+        doc.text("IN-NOVA DISTRIBUCIONES", margin, 14);
+        doc.setFontSize(8);
+        doc.text(`PÁGINA ${doc.internal.getNumberOfPages()}`, pageWidth - margin, 14, { align: "right" });
+        currentY = 32;
         column = 0;
       }
 
       const x = margin + (column * (colWidth + margin));
       
-      // Sombra simulada y Card blanca
-      doc.setFillColor(245, 245, 245);
-      doc.roundedRect(x + 1, currentY + 1, colWidth, cardHeight - 5, 4, 4, 'F');
+      // Card Container
       doc.setFillColor(255, 255, 255);
-      doc.setDrawColor(230, 230, 230);
-      doc.roundedRect(x, currentY, colWidth, cardHeight - 5, 4, 4, 'FD');
+      doc.setDrawColor(230, 230, 235);
+      doc.roundedRect(x, currentY, colWidth, cardHeight - 8, 4, 4, 'FD');
 
-      // Imagen con fondo gris claro
-      doc.setFillColor(250, 250, 250);
-      doc.rect(x + 4, currentY + 4, colWidth - 8, 55, 'F');
+      // Imagen con Placeholder Seguro
+      doc.setFillColor(248, 248, 250);
+      doc.rect(x + 3, currentY + 3, colWidth - 6, 56, 'F');
       
-      const imgBase64 = await loadImageBase64(p.image);
+      const imgBase64 = await getImageData(p.image);
       if (imgBase64) {
         try {
-          doc.addImage(imgBase64, 'JPEG', x + 6, currentY + 6, colWidth - 12, 51, undefined, 'FAST');
-        } catch (e) {}
+          doc.addImage(imgBase64, 'JPEG', x + 5, currentY + 5, colWidth - 10, 52, undefined, 'FAST');
+        } catch (e) {
+          doc.setTextColor(colors.slate[0], colors.slate[1], colors.slate[2]);
+          doc.setFontSize(7);
+          doc.text("VER EN CATÁLOGO WEB", x + colWidth/2, currentY + 30, { align: "center" });
+        }
+      } else {
+        doc.setTextColor(colors.slate[0], colors.slate[1], colors.slate[2]);
+        doc.setFontSize(7);
+        doc.text("VER EN CATÁLOGO WEB", x + colWidth/2, currentY + 30, { align: "center" });
       }
 
-      // Información del producto
+      // Título y Descripción
       doc.setTextColor(colors.navy[0], colors.navy[1], colors.navy[2]);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(9);
@@ -219,43 +242,44 @@ const App: React.FC = () => {
 
       doc.setTextColor(colors.slate[0], colors.slate[1], colors.slate[2]);
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(7);
+      doc.setFontSize(7.5);
       const descLines = doc.splitTextToSize(p.description, colWidth - 10);
       doc.text(descLines.slice(0, 2), x + 5, currentY + 75);
 
       // Precios Detal y Mayor
-      doc.setDrawColor(colors.cyan[0], colors.cyan[1], colors.cyan[2]);
-      doc.setLineWidth(0.5);
-      doc.line(x + 5, currentY + 86, x + colWidth - 5, currentY + 86);
+      doc.setFillColor(colors.navy[0], colors.navy[1], colors.navy[2]);
+      doc.rect(x + 4, currentY + 84, colWidth - 8, 0.2, 'F');
 
       doc.setTextColor(colors.navy[0], colors.navy[1], colors.navy[2]);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
-      doc.text(formatPrice(p.retailPrice), x + 5, currentY + 93);
-      doc.setFontSize(7);
-      doc.text("PRECIO DETAL", x + 5, currentY + 97);
+      doc.text(formatPrice(p.retailPrice), x + 5, currentY + 91);
+      doc.setFontSize(6);
+      doc.text("PRECIO DETAL", x + 5, currentY + 95);
 
       doc.setTextColor(colors.cyan[0], colors.cyan[1], colors.cyan[2]);
       doc.setFontSize(10);
-      doc.text(formatPrice(p.price), x + colWidth - 5, currentY + 93, { align: "right" });
-      doc.setFontSize(7);
-      doc.text("PRECIO MAYOR", x + colWidth - 5, currentY + 97, { align: "right" });
+      doc.text(formatPrice(p.price), x + colWidth - 5, currentY + 91, { align: "right" });
+      doc.setFontSize(6);
+      doc.text("PRECIO MAYOR", x + colWidth - 5, currentY + 95, { align: "right" });
 
-      // Avanzar layout
+      // Badge de Categoría
+      doc.setFillColor(colors.cyan[0], colors.cyan[1], colors.cyan[2]);
+      doc.roundedRect(x + 4, currentY + 4, 18, 4, 1, 1, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(5);
+      doc.text(p.category.toUpperCase(), x + 13, currentY + 7, { align: "center" });
+
+      // Avanzar Layout
       if (column === 0) {
         column = 1;
       } else {
         column = 0;
         currentY += cardHeight;
       }
-
-      // Pie de página con numeración
-      doc.setTextColor(200, 200, 200);
-      doc.setFontSize(8);
-      doc.text(`${doc.internal.getNumberOfPages()}`, pageWidth / 2, pageHeight - 10, { align: "center" });
     }
 
-    doc.save(`InNova_Catalogo_Elite_2025.pdf`);
+    doc.save(`CATALOGO_INNOVA_2025.pdf`);
     setIsGeneratingPdf(false);
   };
 
@@ -409,14 +433,14 @@ const App: React.FC = () => {
               <button 
                 onClick={downloadCatalogPdf}
                 disabled={isGeneratingPdf}
-                className="hidden sm:flex items-center gap-2 bg-white text-slate-900 px-4 py-2.5 rounded-xl border border-slate-200 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50"
+                className="hidden sm:flex items-center gap-2 bg-white text-slate-900 px-4 py-2.5 rounded-xl border border-slate-200 text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm disabled:opacity-50 min-w-[140px] justify-center"
               >
                 {isGeneratingPdf ? (
                   <div className="animate-spin rounded-full h-3 w-3 border-2 border-slate-900 border-t-transparent" />
                 ) : (
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                 )}
-                {isGeneratingPdf ? 'Preparando...' : 'Catálogo PDF'}
+                <span className="ml-2">{isGeneratingPdf ? 'Cargando Fotos...' : 'Catálogo PDF'}</span>
               </button>
             )}
 
@@ -444,8 +468,12 @@ const App: React.FC = () => {
               disabled={isGeneratingPdf}
               className="w-full flex items-center justify-center gap-3 bg-white text-slate-900 py-4 rounded-2xl border border-slate-100 text-[10px] font-black uppercase tracking-widest shadow-sm"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-              {isGeneratingPdf ? 'Preparando PDF...' : 'Descargar Catálogo Completo'}
+              {isGeneratingPdf ? (
+                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-slate-900 border-t-transparent" />
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+              )}
+              {isGeneratingPdf ? 'Procesando Imágenes...' : 'Descargar Catálogo Completo'}
             </button>
           </div>
         )}
