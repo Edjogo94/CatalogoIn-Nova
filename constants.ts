@@ -1,3 +1,4 @@
+
 export const WHATSAPP_PHONE = "573206064030";
 
 export const RAW_PRODUCT_NAMES = [

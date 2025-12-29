@@ -53,13 +53,25 @@ const App: React.FC = () => {
         }
         const savedSales = localStorage.getItem(SALES_KEY);
         if (savedSales) setSales(JSON.parse(savedSales));
+        
         const savedDB = localStorage.getItem(DB_KEY);
         let currentProducts: Product[] = [];
 
         if (savedDB) {
           currentProducts = JSON.parse(savedDB);
+          // SINCRONIZACIÓN FORZADA DE PRECIOS ESPECÍFICOS SOLICITADOS
+          let hasChanges = false;
+          currentProducts = currentProducts.map(p => {
+            if (p.name === "SECADOR AGUACATE" && p.retailPrice !== 35000) {
+              hasChanges = true;
+              return { ...p, retailPrice: 35000 };
+            }
+            return p;
+          });
+          if (hasChanges) {
+            localStorage.setItem(DB_KEY, JSON.stringify(currentProducts));
+          }
         } else {
-          // Tomar los últimos 12 para marcarlos como nuevos inicialmente
           const lastTwelveStartIndex = Math.max(0, RAW_PRODUCT_NAMES.length - 12);
           currentProducts = RAW_PRODUCT_NAMES.map((name, index) => {
             const isCombo = name.toLowerCase().includes("combo");
@@ -182,13 +194,12 @@ const App: React.FC = () => {
     doc.text("Detal & Mayorista", cx, pageHeight - 53, { align: "center" });
 
     // --- PÁGINAS DE PRODUCTOS ---
-    doc.addPage(); // Forzar nueva página para productos
+    doc.addPage();
 
     const activeProducts = products.filter(p => p.stock > 0);
     const colWidth = (pageWidth - (margin * 3)) / 2;
     const cardHeight = 110;
     
-    // Función para resetear cabecera de página
     const drawHeader = () => {
       doc.setFillColor(colors.navy[0], colors.navy[1], colors.navy[2]);
       doc.rect(0, 0, pageWidth, 15, 'F');
@@ -205,7 +216,6 @@ const App: React.FC = () => {
     for (let i = 0; i < activeProducts.length; i++) {
       const p = activeProducts[i];
       
-      // Control de salto de página (4 productos por página para que quepan bien)
       if (i > 0 && i % 4 === 0) {
         doc.addPage();
         drawHeader();
@@ -214,29 +224,22 @@ const App: React.FC = () => {
       }
 
       const x = margin + (column * (colWidth + margin));
-      
-      // Borde de la tarjeta
       doc.setDrawColor(240, 240, 240);
       doc.setFillColor(255, 255, 255);
       doc.roundedRect(x, currentY, colWidth, cardHeight - 10, 3, 3, 'FD');
 
-      // Imagen
       const img = await getImageData(p.image);
       if (img) {
         try { doc.addImage(img, 'JPEG', x + 2, currentY + 2, colWidth - 4, 55); } catch (e) {}
       }
 
-      // Nombre
       doc.setTextColor(0, 0, 0);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(8);
       const nameL = doc.splitTextToSize(p.name.toUpperCase(), colWidth - 4);
       doc.text(nameL, x + 2, currentY + 62);
 
-      // Precios - Diseño en dos columnas dentro de la tarjeta
       const midPoint = x + (colWidth / 2);
-
-      // Precio Detal (Izquierda)
       doc.setTextColor(colors.cyan[0], colors.cyan[1], colors.cyan[2]);
       doc.setFontSize(10);
       doc.text(formatPrice(p.retailPrice), x + 2, currentY + 82);
@@ -244,7 +247,6 @@ const App: React.FC = () => {
       doc.setTextColor(colors.slate[0], colors.slate[1], colors.slate[2]);
       doc.text("PRECIO DETAL", x + 2, currentY + 86);
 
-      // Precio Mayor (Derecha)
       doc.setTextColor(colors.emerald[0], colors.emerald[1], colors.emerald[2]);
       doc.setFontSize(10);
       doc.text(formatPrice(p.price), midPoint, currentY + 82);
@@ -252,15 +254,9 @@ const App: React.FC = () => {
       doc.setTextColor(colors.slate[0], colors.slate[1], colors.slate[2]);
       doc.text("PRECIO MAYOR", midPoint, currentY + 86);
 
-      if (column === 0) { 
-        column = 1; 
-      } else { 
-        column = 0; 
-        currentY += cardHeight; 
-      }
+      if (column === 0) { column = 1; } else { column = 0; currentY += cardHeight; }
     }
 
-    // Guardar
     doc.save(`Catalogo_InNova_Completo.pdf`);
     setIsGeneratingPdf(false);
   };
@@ -394,7 +390,6 @@ const App: React.FC = () => {
           <AdminDashboard products={products} sales={sales} whatsappPhone={whatsappPhone} onUpdateProduct={updateProduct} onAddProduct={addProduct} onDeleteProduct={deleteProduct} onUpdateSettings={(p) => { setWhatsappPhone(p); localStorage.setItem(SETTINGS_KEY, JSON.stringify({ phone: p })); }} onClearSales={() => { setSales([]); localStorage.removeItem(SALES_KEY); }} />
         ) : (
           <div className="space-y-12">
-            {/* Sección Lo Nuevo */}
             {newArrivals.length > 0 && searchTerm === '' && selectedCategory === Category.ALL && (
               <section className="animate-in slide-in-from-bottom duration-700">
                 <div className="flex items-center gap-3 mb-6">
@@ -415,7 +410,6 @@ const App: React.FC = () => {
               </section>
             )}
 
-            {/* Catálogo General */}
             <section>
               <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
                 <div>
