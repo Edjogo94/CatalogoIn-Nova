@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Product, Category, CartItem } from './types';
 import { RAW_PRODUCT_NAMES, PRODUCT_ASSETS, PRODUCT_PRICES, PRODUCT_RETAIL_PRICES, PRODUCT_STOCK, PRODUCT_DESCRIPTIONS, WHATSAPP_PHONE as DEFAULT_PHONE } from './constants';
 import { enrichProductData } from './services/geminiService';
+import { fetchProductsFromSheet, syncProductsToSheet } from './services/sheetService';
 import ProductCard from './components/ProductCard';
 import ProductModal from './components/ProductModal';
 import CartDrawer from './components/CartDrawer';
@@ -28,6 +29,7 @@ const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [sales, setSales] = useState<any[]>([]);
   const [whatsappPhone, setWhatsappPhone] = useState(DEFAULT_PHONE);
+  const [sheetUrl, setSheetUrl] = useState('');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
@@ -47,52 +49,83 @@ const App: React.FC = () => {
       try {
         setLoading(true);
         const savedSettings = localStorage.getItem(SETTINGS_KEY);
+        let currentSheetUrl = '';
+        
         if (savedSettings) {
           const settings = JSON.parse(savedSettings);
           setWhatsappPhone(settings.phone || DEFAULT_PHONE);
+          setSheetUrl(settings.sheetUrl || '');
+          currentSheetUrl = settings.sheetUrl || '';
         }
+        
         const savedSales = localStorage.getItem(SALES_KEY);
         if (savedSales) setSales(JSON.parse(savedSales));
         
-        const savedDB = localStorage.getItem(DB_KEY);
-        let currentProducts: Product[] = [];
+        // Estrategia de carga de datos:
+        // 1. Si hay Sheet URL, intentar cargar de la nube.
+        // 2. Si falla o no hay URL, cargar de LocalStorage.
+        // 3. Si no hay LocalStorage, cargar de constantes.
+        
+        let loadedProducts: Product[] = [];
+        let fromCloud = false;
 
-        if (savedDB) {
-          currentProducts = JSON.parse(savedDB);
-          // SINCRONIZACIÓN FORZADA DE PRECIOS ESPECÍFICOS SOLICITADOS
-          let hasChanges = false;
-          currentProducts = currentProducts.map(p => {
-            if (p.name === "SECADOR AGUACATE" && p.retailPrice !== 35000) {
-              hasChanges = true;
-              return { ...p, retailPrice: 35000 };
-            }
-            return p;
-          });
-          if (hasChanges) {
-            localStorage.setItem(DB_KEY, JSON.stringify(currentProducts));
+        if (currentSheetUrl) {
+          try {
+             const cloudProducts = await fetchProductsFromSheet(currentSheetUrl);
+             if (cloudProducts.length > 0) {
+               loadedProducts = cloudProducts;
+               fromCloud = true;
+             }
+          } catch (e) {
+            console.warn("Fallo carga nube, usando local", e);
           }
-        } else {
-          const lastTwelveStartIndex = Math.max(0, RAW_PRODUCT_NAMES.length - 12);
-          currentProducts = RAW_PRODUCT_NAMES.map((name, index) => {
-            const isCombo = name.toLowerCase().includes("combo");
-            return {
-              id: `prod-${index}-${Date.now()}`,
-              name: name,
-              category: isCombo ? Category.COMBOS : Category.HOME,
-              description: PRODUCT_DESCRIPTIONS[name] || "Producto de alta calidad.",
-              price: PRODUCT_PRICES[name] || 0,
-              retailPrice: PRODUCT_RETAIL_PRICES[name] || 0,
-              stock: PRODUCT_STOCK[name] || 0,
-              image: PRODUCT_ASSETS[name]?.image || FALLBACK_IMAGE,
-              features: ["Calidad garantizada"],
-              videoUrl: PRODUCT_ASSETS[name]?.video,
-              isNew: index >= lastTwelveStartIndex, 
-              isCombo: isCombo
-            };
-          });
-          localStorage.setItem(DB_KEY, JSON.stringify(currentProducts));
         }
-        setProducts(currentProducts);
+
+        if (!fromCloud) {
+           const savedDB = localStorage.getItem(DB_KEY);
+           if (savedDB) {
+             loadedProducts = JSON.parse(savedDB);
+             // Sincronización forzada local si no vino de la nube
+             let hasChanges = false;
+             loadedProducts = loadedProducts.map(p => {
+               if (p.name === "SECADOR AGUACATE" && p.retailPrice !== 35000) {
+                 hasChanges = true;
+                 return { ...p, retailPrice: 35000 };
+               }
+               // Actualización forzada para el Esquinero
+               if (p.name === "ESTANTE ESQUINERO DE BAÑO" && p.retailPrice !== 45000) {
+                 hasChanges = true;
+                 return { ...p, retailPrice: 45000 };
+               }
+               return p;
+             });
+             if (hasChanges) localStorage.setItem(DB_KEY, JSON.stringify(loadedProducts));
+           } else {
+             // Carga inicial desde constantes
+             const lastTwelveStartIndex = Math.max(0, RAW_PRODUCT_NAMES.length - 12);
+             loadedProducts = RAW_PRODUCT_NAMES.map((name, index) => {
+               const isCombo = name.toLowerCase().includes("combo");
+               return {
+                 id: `prod-${index}-${Date.now()}`,
+                 name: name,
+                 category: isCombo ? Category.COMBOS : Category.HOME,
+                 description: PRODUCT_DESCRIPTIONS[name] || "Producto de alta calidad.",
+                 price: PRODUCT_PRICES[name] || 0,
+                 retailPrice: PRODUCT_RETAIL_PRICES[name] || 0,
+                 stock: PRODUCT_STOCK[name] || 0,
+                 image: PRODUCT_ASSETS[name]?.image || FALLBACK_IMAGE,
+                 features: ["Calidad garantizada"],
+                 videoUrl: PRODUCT_ASSETS[name]?.video,
+                 isNew: index >= lastTwelveStartIndex, 
+                 isCombo: isCombo,
+                 supplierCost: 0
+               };
+             });
+             localStorage.setItem(DB_KEY, JSON.stringify(loadedProducts));
+           }
+        }
+        
+        setProducts(loadedProducts);
       } catch (err) {
         console.error("Error inicializando:", err);
       } finally {
@@ -101,6 +134,17 @@ const App: React.FC = () => {
     };
     initApp();
   }, []);
+
+  // Función unificada para guardar (Local + Nube)
+  const saveProductsData = async (newProducts: Product[]) => {
+    setProducts(newProducts);
+    localStorage.setItem(DB_KEY, JSON.stringify(newProducts));
+    
+    // Si hay URL configurada, intentamos sincronizar en segundo plano
+    if (sheetUrl) {
+      syncProductsToSheet(sheetUrl, newProducts).catch(e => console.error("Error background sync", e));
+    }
+  };
 
   const downloadCatalogPdf = async () => {
     if (isGeneratingPdf) return;
@@ -176,7 +220,6 @@ const App: React.FC = () => {
       });
     };
 
-    // --- PÁGINA 1: PORTADA ---
     doc.setFillColor(colors.navy[0], colors.navy[1], colors.navy[2]);
     doc.rect(0, 0, pageWidth, pageHeight, 'F');
     const cx = pageWidth / 2;
@@ -193,7 +236,6 @@ const App: React.FC = () => {
     doc.setFontSize(10);
     doc.text("Detal & Mayorista", cx, pageHeight - 53, { align: "center" });
 
-    // --- PÁGINAS DE PRODUCTOS ---
     doc.addPage();
 
     const activeProducts = products.filter(p => p.stock > 0);
@@ -263,8 +305,7 @@ const App: React.FC = () => {
 
   const updateProduct = (updatedProd: Product) => {
     const newProducts = products.map(p => p.id === updatedProd.id ? updatedProd : p);
-    setProducts(newProducts);
-    localStorage.setItem(DB_KEY, JSON.stringify(newProducts));
+    saveProductsData(newProducts);
   };
 
   const addProduct = () => {
@@ -278,18 +319,17 @@ const App: React.FC = () => {
       stock: 10,
       image: FALLBACK_IMAGE,
       features: ["Calidad"],
-      isNew: true
+      isNew: true,
+      supplierCost: 0
     };
     const n = [newProd, ...products];
-    setProducts(n);
-    localStorage.setItem(DB_KEY, JSON.stringify(n));
+    saveProductsData(n);
   };
 
   const deleteProduct = (id: string) => {
     if (confirm("¿Eliminar producto?")) {
       const n = products.filter(p => p.id !== id);
-      setProducts(n);
-      localStorage.setItem(DB_KEY, JSON.stringify(n));
+      saveProductsData(n);
     }
   };
 
@@ -316,6 +356,9 @@ const App: React.FC = () => {
       const ci = cart.find(x => x.id === p.id);
       return ci ? { ...p, stock: Math.max(0, p.stock - ci.quantity) } : p;
     });
+    // Guardamos estado de productos
+    saveProductsData(nP);
+
     const nS = {
       id: `s-${Date.now()}`,
       date: new Date().toISOString(),
@@ -323,10 +366,24 @@ const App: React.FC = () => {
       total: cart.reduce((a, b) => a + (b.quantity >= 5 ? b.price : b.retailPrice) * b.quantity, 0)
     };
     const nH = [nS, ...sales];
-    setProducts(nP); setSales(nH); setCart([]); setIsCartOpen(false);
-    localStorage.setItem(DB_KEY, JSON.stringify(nP));
+    setSales(nH); 
+    setCart([]); 
+    setIsCartOpen(false);
     localStorage.setItem(SALES_KEY, JSON.stringify(nH));
   };
+
+  const handleUpdateSettings = (phone: string, url: string) => {
+    setWhatsappPhone(phone);
+    setSheetUrl(url);
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({ phone, sheetUrl: url }));
+  }
+
+  const handleManualCloudSync = async () => {
+    if (sheetUrl) {
+       return await syncProductsToSheet(sheetUrl, products);
+    }
+    return false;
+  }
 
   const newArrivals = useMemo(() => {
     return products.filter(p => p.isNew).slice(0, 12);
@@ -387,7 +444,7 @@ const App: React.FC = () => {
 
       <main className="flex-grow max-w-7xl mx-auto px-4 py-8 w-full">
         {adminView && isAdmin ? (
-          <AdminDashboard products={products} sales={sales} whatsappPhone={whatsappPhone} onUpdateProduct={updateProduct} onAddProduct={addProduct} onDeleteProduct={deleteProduct} onUpdateSettings={(p) => { setWhatsappPhone(p); localStorage.setItem(SETTINGS_KEY, JSON.stringify({ phone: p })); }} onClearSales={() => { setSales([]); localStorage.removeItem(SALES_KEY); }} />
+          <AdminDashboard products={products} sales={sales} whatsappPhone={whatsappPhone} sheetUrl={sheetUrl} onUpdateProduct={updateProduct} onAddProduct={addProduct} onDeleteProduct={deleteProduct} onUpdateSettings={handleUpdateSettings} onSyncToCloud={handleManualCloudSync} onClearSales={() => { setSales([]); localStorage.removeItem(SALES_KEY); }} />
         ) : (
           <div className="space-y-12">
             {newArrivals.length > 0 && searchTerm === '' && selectedCategory === Category.ALL && (

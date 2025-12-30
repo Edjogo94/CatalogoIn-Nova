@@ -13,6 +13,7 @@ export interface Product {
   originalIndex?: number;
   isNew?: boolean;
   isCombo?: boolean;
+  supplierCost?: number;
 }
 
 export interface CartItem extends Product {
