@@ -2,11 +2,14 @@
 export const WHATSAPP_PHONE = "573206064030";
 
 export const RAW_PRODUCT_NAMES = [
+  "SPRAY DE ACEITE CON MANIGUETA",
+  "MESA PORTÁTIL PARA LAPTOP",
   "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA",
   "HIDROLAVADORA",
   "SECADOR AGUACATE",
   "TOPE DE PUERTA",
   "CEPILLO SECADOR 5 EN 1",
+  "BOLSO DEPORTIVO T60",
   "RELOJ DE PARED 3D 80 CM X 100 CM",
   "COMBO TAPETE ULTRA ABSORBENTE",
   "DISPENSADOR DE JABÓN MULTIFUNCIONAL",
@@ -45,11 +48,14 @@ export const RAW_PRODUCT_NAMES = [
 ];
 
 export const PRODUCT_DESCRIPTIONS: Record<string, string> = {
+  "SPRAY DE ACEITE CON MANIGUETA": "Cocina de forma más saludable controlando la cantidad de aceite. Dispensador con manigueta ergonómica y boquilla de niebla fina para una distribución uniforme.",
+  "MESA PORTÁTIL PARA LAPTOP": "Trabaja o estudia cómodamente desde tu cama o sofá. Mesa plegable, ligera y resistente con espacio optimizado para tu portátil y mouse.",
   "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": "¡EL DÚO DINÁMICO DE LIMPIEZA! Llévate nuestra hidrolavadora de alta presión junto a la aspiradora de mano inalámbrica por un precio imbatible.",
   "HIDROLAVADORA": "Potente limpieza a presión para eliminar suciedad difícil en autos, pisos y paredes. Eficiencia y ahorro de agua garantizados.",
   "SECADOR AGUACATE": "Secador profesional con tecnología de aguacate y macadamia para un cabello más sedoso, brillante y libre de frizz.",
   "TOPE DE PUERTA": "Protege tus paredes y muebles de impactos accidentales. Diseño funcional y duradero ideal para cualquier habitación.",
   "CEPILLO SECADOR 5 EN 1": "Herramienta multifuncional para moldear tu cabello: seca, alisa y crea ondas perfectas con facilidad y protección térmica.",
+  "BOLSO DEPORTIVO T60": "Maleta deportiva multifuncional e impermeable. Cuenta con compartimento independiente para zapatos, múltiples bolsillos y correas convertibles para usar como morral o bolso de mano.",
   "RELOJ DE PARED 3D 80 CM X 100 CM": "Transforma tu pared en una pieza de arte moderna. Reloj de gran formato con acabado elegante y montaje sencillo.",
   "COMBO TAPETE ULTRA ABSORBENTE": "Tapetes de secado rápido que mantienen tu baño limpio y seguro gracias a su base antideslizante y absorción superior.",
   "DISPENSADOR DE JABÓN MULTIFUNCIONAL": "Accesorio práctico y elegante para organizar tu baño o cocina, facilitando el lavado de manos con ahorro de jabón.",
@@ -88,18 +94,21 @@ export const PRODUCT_DESCRIPTIONS: Record<string, string> = {
 };
 
 export const PRODUCT_PRICES: Record<string, number> = {
+  "SPRAY DE ACEITE CON MANIGUETA": 10000,
+  "MESA PORTÁTIL PARA LAPTOP": 35000,
   "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": 110000,
   "HIDROLAVADORA": 55000,
   "SECADOR AGUACATE": 25000,
   "TOPE DE PUERTA": 8500,
   "CEPILLO SECADOR 5 EN 1": 62500,
+  "BOLSO DEPORTIVO T60": 40000,
   "RELOJ DE PARED 3D 80 CM X 100 CM": 31500,
   "COMBO TAPETE ULTRA ABSORBENTE": 22000,
   "DISPENSADOR DE JABÓN MULTIFUNCIONAL": 12000,
   "CÁMARA DE SEGURIDAD IK100": 46000,
   "ESTANTE ESQUINERO DE BAÑO": 40000,
   "TUBO MULTIFUNCIONAL 90 A 160 CM": 18900,
-  "TUBO TENDEDERO PEQUEEMA 60 CM A 100 CM": 16900,
+  "TUBO TENDEDERO PEQUEÑO 60 CM A 100 CM": 16900,
   "TUBO MULTIFUNCIONAL GRANDE 160 A 300 CM": 27900,
   "LAMPARA SOLAR PANEL 6000W": 31900,
   "PAPEL TAPIZ": 9500,
@@ -131,11 +140,14 @@ export const PRODUCT_PRICES: Record<string, number> = {
 };
 
 export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
+  "SPRAY DE ACEITE CON MANIGUETA": 16000,
+  "MESA PORTÁTIL PARA LAPTOP": 40000,
   "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": 125000,
   "HIDROLAVADORA": 60000,
   "SECADOR AGUACATE": 35000,
   "TOPE DE PUERTA": 10000,
   "CEPILLO SECADOR 5 EN 1": 65000,
+  "BOLSO DEPORTIVO T60": 45000,
   "RELOJ DE PARED 3D 80 CM X 100 CM": 35000,
   "COMBO TAPETE ULTRA ABSORBENTE": 25000,
   "DISPENSADOR DE JABÓN MULTIFUNCIONAL": 15000,
@@ -174,11 +186,14 @@ export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
 };
 
 export const PRODUCT_STOCK: Record<string, number> = {
+  "SPRAY DE ACEITE CON MANIGUETA": 15,
+  "MESA PORTÁTIL PARA LAPTOP": 15,
   "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": 10,
   "HIDROLAVADORA": 5,
   "SECADOR AGUACATE": 7,
   "TOPE DE PUERTA": 2,
   "CEPILLO SECADOR 5 EN 1": 6,
+  "BOLSO DEPORTIVO T60": 15,
   "RELOJ DE PARED 3D 80 CM X 100 CM": 7,
   "COMBO TAPETE ULTRA ABSORBENTE": 7,
   "DISPENSADOR DE JABÓN MULTIFUNCIONAL": 6,
@@ -217,6 +232,12 @@ export const PRODUCT_STOCK: Record<string, number> = {
 };
 
 export const PRODUCT_ASSETS: Record<string, { image?: string; video?: string }> = {
+  "SPRAY DE ACEITE CON MANIGUETA": {
+    image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/4fb35ff4-4cc4-4fe4-873c-561b574663b3.webp"
+  },
+  "MESA PORTÁTIL PARA LAPTOP": {
+    image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/45f11e30-ce46-4eab-ab21-2542e557c444.webp"
+  },
   "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": {
     image: "https://smartjoys.co/wp-content/uploads/2025/11/COMBO-HidrolavadoraAspiradora-1.jpg"
   },
@@ -232,6 +253,9 @@ export const PRODUCT_ASSETS: Record<string, { image?: string; video?: string }> 
   },
   "CEPILLO SECADOR 5 EN 1": {
     image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/12c79d58-2e43-4bfd-8399-565f85ac8411.webp"
+  },
+  "BOLSO DEPORTIVO T60": {
+    image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/0455db32-f667-4b8b-ad14-42d6a6cc8675.webp"
   },
   "RELOJ DE PARED 3D 80 CM X 100 CM": {
     image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/2d500d91-f3cb-4edc-8973-1d26c616ee6d.webp"

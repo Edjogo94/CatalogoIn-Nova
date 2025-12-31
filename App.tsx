@@ -11,16 +11,23 @@ import AdminModal from './components/AdminModal';
 import AdminDashboard from './components/AdminDashboard';
 import { jsPDF } from "jspdf";
 
-const DB_KEY = 'innova_full_db_v2';
+const DB_KEY = 'innova_full_db_v7'; // Actualizado para cambiar el precio del Spray
 const SALES_KEY = 'innova_sales_history_v2';
 const SETTINGS_KEY = 'innova_settings_v2';
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800';
 
 const LogoHexagon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <div className={`${className} relative flex items-center justify-center`}>
-    <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
-      <path d="M50 5 L93.3 30 V70 L50 95 L6.7 70 V30 Z" fill="#0f172a" stroke="#06b6d4" strokeWidth="6"/>
-      <text x="50" y="62" textAnchor="middle" fill="#f8fafc" fontFamily="Inter, sans-serif" fontWeight="900" fontSize="34" letterSpacing="-1">IN</text>
+    <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg filter">
+      <defs>
+        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#0f172a" />
+          <stop offset="100%" stopColor="#0891b2" />
+        </linearGradient>
+      </defs>
+      <path d="M50 5 L93.3 30 V70 L50 95 L6.7 70 V30 Z" fill="url(#logoGradient)" stroke="#06b6d4" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M35 70 V30 L65 70 V30" fill="none" stroke="#f8fafc" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="75" cy="30" r="5" fill="#22d3ee" />
     </svg>
   </div>
 );
@@ -61,11 +68,6 @@ const App: React.FC = () => {
         const savedSales = localStorage.getItem(SALES_KEY);
         if (savedSales) setSales(JSON.parse(savedSales));
         
-        // Estrategia de carga de datos:
-        // 1. Si hay Sheet URL, intentar cargar de la nube.
-        // 2. Si falla o no hay URL, cargar de LocalStorage.
-        // 3. Si no hay LocalStorage, cargar de constantes.
-        
         let loadedProducts: Product[] = [];
         let fromCloud = false;
 
@@ -85,39 +87,29 @@ const App: React.FC = () => {
            const savedDB = localStorage.getItem(DB_KEY);
            if (savedDB) {
              loadedProducts = JSON.parse(savedDB);
-             // Sincronización forzada local si no vino de la nube
-             let hasChanges = false;
-             loadedProducts = loadedProducts.map(p => {
-               if (p.name === "SECADOR AGUACATE" && p.retailPrice !== 35000) {
-                 hasChanges = true;
-                 return { ...p, retailPrice: 35000 };
-               }
-               // Actualización forzada para el Esquinero
-               if (p.name === "ESTANTE ESQUINERO DE BAÑO" && p.retailPrice !== 45000) {
-                 hasChanges = true;
-                 return { ...p, retailPrice: 45000 };
-               }
-               return p;
-             });
-             if (hasChanges) localStorage.setItem(DB_KEY, JSON.stringify(loadedProducts));
            } else {
-             // Carga inicial desde constantes
-             const lastTwelveStartIndex = Math.max(0, RAW_PRODUCT_NAMES.length - 12);
              loadedProducts = RAW_PRODUCT_NAMES.map((name, index) => {
-               const isCombo = name.toLowerCase().includes("combo");
+               let cat = Category.HOME;
+               if (name.includes("SECADOR") || name.includes("CEPILLO") || name.includes("BARBERA") || name.includes("DIADEMA")) cat = Category.BEAUTY;
+               if (name.includes("HIDROLAVADORA") || name.includes("HERRAMIENTA") || name.includes("AFILADOR")) cat = Category.TOOLS;
+               if (name.includes("CINTA") || name.includes("CÁMARA") || name.includes("RELOJ") || name.includes("LAMPARA")) cat = Category.TECH;
+               if (name.includes("BOLSO") || name.includes("ORGANIZADOR")) cat = Category.ORGANIZATION;
+               if (name.includes("COCINA") || name.includes("SARTEN") || name.includes("DISPENSADOR") || name.includes("SPRAY") || name.includes("ACEITE")) cat = Category.KITCHEN;
+               if (name.includes("MESA") || name.includes("PORTÁTIL")) cat = Category.HOME; 
+               
                return {
                  id: `prod-${index}-${Date.now()}`,
                  name: name,
-                 category: isCombo ? Category.COMBOS : Category.HOME,
+                 category: cat,
                  description: PRODUCT_DESCRIPTIONS[name] || "Producto de alta calidad.",
                  price: PRODUCT_PRICES[name] || 0,
                  retailPrice: PRODUCT_RETAIL_PRICES[name] || 0,
-                 stock: PRODUCT_STOCK[name] || 0,
+                 stock: PRODUCT_STOCK[name] || 10,
                  image: PRODUCT_ASSETS[name]?.image || FALLBACK_IMAGE,
                  features: ["Calidad garantizada"],
                  videoUrl: PRODUCT_ASSETS[name]?.video,
-                 isNew: index >= lastTwelveStartIndex, 
-                 isCombo: isCombo,
+                 isNew: name.includes("T60") || name.includes("BOLSO") || name.includes("MESA") || name.includes("SPRAY"), 
+                 isCombo: name.includes("COMBO"),
                  supplierCost: 0
                };
              });
@@ -135,12 +127,10 @@ const App: React.FC = () => {
     initApp();
   }, []);
 
-  // Función unificada para guardar (Local + Nube)
   const saveProductsData = async (newProducts: Product[]) => {
     setProducts(newProducts);
     localStorage.setItem(DB_KEY, JSON.stringify(newProducts));
     
-    // Si hay URL configurada, intentamos sincronizar en segundo plano
     if (sheetUrl) {
       syncProductsToSheet(sheetUrl, newProducts).catch(e => console.error("Error background sync", e));
     }
@@ -356,7 +346,6 @@ const App: React.FC = () => {
       const ci = cart.find(x => x.id === p.id);
       return ci ? { ...p, stock: Math.max(0, p.stock - ci.quantity) } : p;
     });
-    // Guardamos estado de productos
     saveProductsData(nP);
 
     const nS = {
@@ -397,6 +386,33 @@ const App: React.FC = () => {
     });
   }, [products, selectedCategory, searchTerm]);
 
+  const socialLinks = [
+    { 
+      name: 'Instagram', 
+      url: 'https://instagram.com', 
+      color: 'hover:text-pink-600 hover:bg-pink-50 hover:border-pink-200', 
+      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.996 4h.009c2.617 0 3.864 0 4.821.503a5.006 5.006 0 012.169 2.169C19.5 7.63 19.5 8.878 19.5 11.496v1.008c0 2.618 0 3.865-.504 4.822a5.007 5.007 0 01-2.169 2.168C15.87 20 14.623 20 12.005 20h-1.009c-2.617 0-3.865 0-4.821-.504a5.007 5.007 0 01-2.169-2.168C3.5 16.37 3.5 15.122 3.5 12.505v-1.009c0-2.617 0-3.864.504-4.821a5.007 5.007 0 012.169-2.169C7.13 4 8.378 4 10.995 4h1.001zm0 0h1.001M16 8a.5.5 0 110-1 .5.5 0 010 1zM12 16a4 4 0 100-8 4 4 0 000 8z" /></svg>
+    },
+    { 
+      name: 'Facebook', 
+      url: 'https://facebook.com', 
+      color: 'hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200', 
+      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" /></svg>
+    },
+    { 
+      name: 'TikTok', 
+      url: 'https://tiktok.com', 
+      color: 'hover:text-black hover:bg-slate-50 hover:border-slate-300', 
+      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h2a5 5 0 015 5v3M15 7a4 4 0 014 4m-4-11v11a4 4 0 01-4 4h-2" /></svg>
+    },
+    { 
+      name: 'WhatsApp', 
+      url: `https://wa.me/${whatsappPhone}`, 
+      color: 'hover:text-emerald-600 hover:bg-emerald-50 hover:border-emerald-200', 
+      icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+    }
+  ];
+
   if (loading) return null;
 
   return (
@@ -416,8 +432,8 @@ const App: React.FC = () => {
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 px-4 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => { setAdminView(false); setSelectedCategory(Category.ALL); setSearchTerm(''); }}>
-            <LogoHexagon className="w-10 h-10" />
-            <h1 className="hidden sm:block text-xl font-black uppercase tracking-tighter text-slate-900">In-Nova</h1>
+            <LogoHexagon className="w-12 h-12" />
+            <h1 className="hidden sm:block text-2xl font-black uppercase tracking-tighter text-slate-900">In-Nova</h1>
           </div>
           
           <div className="relative flex-1 max-w-md">
@@ -500,6 +516,37 @@ const App: React.FC = () => {
           </div>
         )}
       </main>
+
+      {!adminView && (
+        <footer className="bg-white border-t border-slate-100 py-16 mt-auto">
+          <div className="max-w-7xl mx-auto px-4 flex flex-col items-center gap-8">
+            <LogoHexagon className="w-14 h-14 opacity-30 grayscale" />
+            
+            <div className="flex gap-4 flex-wrap justify-center">
+              {socialLinks.map((social) => (
+                <a 
+                  key={social.name}
+                  href={social.url}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={`flex items-center gap-3 px-6 py-3 rounded-2xl border border-slate-100 text-slate-400 bg-slate-50 transition-all duration-300 group ${social.color}`}
+                >
+                  <div className="transition-transform group-hover:scale-110">
+                    {social.icon}
+                  </div>
+                  <span className="text-xs font-black uppercase tracking-widest">{social.name}</span>
+                </a>
+              ))}
+            </div>
+
+            <div className="text-center space-y-2 mt-4">
+              <p className="text-[10px] text-slate-300 font-bold uppercase tracking-[0.2em]">
+                © 2025 Distribuciones In-Nova
+              </p>
+            </div>
+          </div>
+        </footer>
+      )}
 
       <ProductModal product={selectedProduct} onClose={() => setSelectedProduct(null)} onAddToCart={addToCart} />
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} items={cart} whatsappPhone={whatsappPhone} onUpdateQuantity={(id, d) => setCart(prev => prev.map(i => i.id === id ? {...i, quantity: Math.min(i.stock, Math.max(1, i.quantity + d))} : i))} onRemove={(id) => setCart(prev => prev.filter(i => i.id !== id))} onCheckout={finalizeSale} />
