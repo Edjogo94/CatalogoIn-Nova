@@ -18,16 +18,26 @@ const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1523275335684-37898b6b
 
 const LogoHexagon: React.FC<{ className?: string }> = ({ className = "w-12 h-12" }) => (
   <div className={`${className} relative flex items-center justify-center`}>
-    <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg filter">
-      <defs>
-        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#0f172a" />
-          <stop offset="100%" stopColor="#0891b2" />
-        </linearGradient>
-      </defs>
-      <path d="M50 5 L93.3 30 V70 L50 95 L6.7 70 V30 Z" fill="url(#logoGradient)" stroke="#06b6d4" strokeWidth="3" strokeLinejoin="round" />
-      <path d="M35 70 V30 L65 70 V30" fill="none" stroke="#f8fafc" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="75" cy="30" r="5" fill="#22d3ee" />
+    <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+      <path 
+        d="M50 5 L93.3 30 V70 L50 95 L6.7 70 V30 Z" 
+        fill="#0f172a" 
+        stroke="#06b6d4" 
+        strokeWidth="6" 
+        strokeLinejoin="round" 
+      />
+      <text 
+        x="50" 
+        y="65" 
+        fontSize="40" 
+        fontWeight="900" 
+        fontFamily="Arial, sans-serif" 
+        fill="white" 
+        textAnchor="middle" 
+        className="select-none"
+      >
+        IN
+      </text>
     </svg>
   </div>
 );
@@ -433,7 +443,7 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => { setAdminView(false); setSelectedCategory(Category.ALL); setSearchTerm(''); }}>
             <LogoHexagon className="w-12 h-12" />
-            <h1 className="hidden sm:block text-2xl font-black uppercase tracking-tighter text-slate-900">In-Nova</h1>
+            <h1 className="hidden sm:block text-2xl font-black uppercase tracking-tighter text-slate-900">Distribuciones In-Nova</h1>
           </div>
           
           <div className="relative flex-1 max-w-md">
