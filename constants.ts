@@ -2,6 +2,7 @@
 export const WHATSAPP_PHONE = "573206064030";
 
 export const RAW_PRODUCT_NAMES = [
+  "ESPEJO RETROVISOR 160 GRADOS",
   "SPRAY DE ACEITE CON MANIGUETA",
   "MESA PORTÁTIL PARA LAPTOP",
   "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA",
@@ -48,6 +49,7 @@ export const RAW_PRODUCT_NAMES = [
 ];
 
 export const PRODUCT_DESCRIPTIONS: Record<string, string> = {
+  "ESPEJO RETROVISOR 160 GRADOS": "Maximiza tu seguridad al conducir. Espejo panorámico de 160 grados que elimina puntos ciegos, ideal para motocicletas y bicicletas con instalación universal.",
   "SPRAY DE ACEITE CON MANIGUETA": "Cocina de forma más saludable controlando la cantidad de aceite. Dispensador con manigueta ergonómica y boquilla de niebla fina para una distribución uniforme.",
   "MESA PORTÁTIL PARA LAPTOP": "Trabaja o estudia cómodamente desde tu cama o sofá. Mesa plegable, ligera y resistente con espacio optimizado para tu portátil y mouse.",
   "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": "¡EL DÚO DINÁMICO DE LIMPIEZA! Llévate nuestra hidrolavadora de alta presión junto a la aspiradora de mano inalámbrica por un precio imbatible.",
@@ -94,6 +96,7 @@ export const PRODUCT_DESCRIPTIONS: Record<string, string> = {
 };
 
 export const PRODUCT_PRICES: Record<string, number> = {
+  "ESPEJO RETROVISOR 160 GRADOS": 40000,
   "SPRAY DE ACEITE CON MANIGUETA": 10000,
   "MESA PORTÁTIL PARA LAPTOP": 35000,
   "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": 110000,
@@ -140,6 +143,7 @@ export const PRODUCT_PRICES: Record<string, number> = {
 };
 
 export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
+  "ESPEJO RETROVISOR 160 GRADOS": 50000,
   "SPRAY DE ACEITE CON MANIGUETA": 16000,
   "MESA PORTÁTIL PARA LAPTOP": 40000,
   "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": 125000,
@@ -186,6 +190,7 @@ export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
 };
 
 export const PRODUCT_STOCK: Record<string, number> = {
+  "ESPEJO RETROVISOR 160 GRADOS": 15,
   "SPRAY DE ACEITE CON MANIGUETA": 15,
   "MESA PORTÁTIL PARA LAPTOP": 15,
   "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": 10,
@@ -232,6 +237,9 @@ export const PRODUCT_STOCK: Record<string, number> = {
 };
 
 export const PRODUCT_ASSETS: Record<string, { image?: string; video?: string }> = {
+  "ESPEJO RETROVISOR 160 GRADOS": {
+    image: "https://i.ibb.co/cKYFM7Sy/D-NQ-NP-2-X-939354-MCO77333986825-062024-F.webp"
+  },
   "SPRAY DE ACEITE CON MANIGUETA": {
     image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/4fb35ff4-4cc4-4fe4-873c-561b574663b3.webp"
   },
@@ -239,7 +247,7 @@ export const PRODUCT_ASSETS: Record<string, { image?: string; video?: string }> 
     image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/45f11e30-ce46-4eab-ab21-2542e557c444.webp"
   },
   "COMBO ASEO TOTAL: HIDROLAVADORA + ASPIRADORA": {
-    image: "https://smartjoys.co/wp-content/uploads/2025/11/COMBO-HidrolavadoraAspiradora-1.jpg"
+    image: "https://i.ibb.co/VYRzg9xQ/image.png"
   },
   "HIDROLAVADORA": {
     image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/ce2d6631-097e-4fac-8707-0e40197b19e7.webp",

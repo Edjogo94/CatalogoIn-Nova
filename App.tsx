@@ -11,7 +11,7 @@ import AdminModal from './components/AdminModal';
 import AdminDashboard from './components/AdminDashboard';
 import { jsPDF } from "jspdf";
 
-const DB_KEY = 'innova_full_db_v7'; // Actualizado para cambiar el precio del Spray
+const DB_KEY = 'innova_full_db_v9'; // Actualizado para cambiar la imagen del Combo
 const SALES_KEY = 'innova_sales_history_v2';
 const SETTINGS_KEY = 'innova_settings_v2';
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800';
@@ -101,7 +101,7 @@ const App: React.FC = () => {
              loadedProducts = RAW_PRODUCT_NAMES.map((name, index) => {
                let cat = Category.HOME;
                if (name.includes("SECADOR") || name.includes("CEPILLO") || name.includes("BARBERA") || name.includes("DIADEMA")) cat = Category.BEAUTY;
-               if (name.includes("HIDROLAVADORA") || name.includes("HERRAMIENTA") || name.includes("AFILADOR")) cat = Category.TOOLS;
+               if (name.includes("HIDROLAVADORA") || name.includes("HERRAMIENTA") || name.includes("AFILADOR") || name.includes("ESPEJO")) cat = Category.TOOLS;
                if (name.includes("CINTA") || name.includes("CÁMARA") || name.includes("RELOJ") || name.includes("LAMPARA")) cat = Category.TECH;
                if (name.includes("BOLSO") || name.includes("ORGANIZADOR")) cat = Category.ORGANIZATION;
                if (name.includes("COCINA") || name.includes("SARTEN") || name.includes("DISPENSADOR") || name.includes("SPRAY") || name.includes("ACEITE")) cat = Category.KITCHEN;
@@ -118,7 +118,7 @@ const App: React.FC = () => {
                  image: PRODUCT_ASSETS[name]?.image || FALLBACK_IMAGE,
                  features: ["Calidad garantizada"],
                  videoUrl: PRODUCT_ASSETS[name]?.video,
-                 isNew: name.includes("T60") || name.includes("BOLSO") || name.includes("MESA") || name.includes("SPRAY"), 
+                 isNew: name.includes("T60") || name.includes("BOLSO") || name.includes("MESA") || name.includes("SPRAY") || name.includes("ESPEJO"), 
                  isCombo: name.includes("COMBO"),
                  supplierCost: 0
                };
