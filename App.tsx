@@ -399,7 +399,7 @@ const App: React.FC = () => {
   const socialLinks = [
     { 
       name: 'Instagram', 
-      url: 'https://instagram.com', 
+      url: 'https://www.instagram.com/in_nova_2025/', 
       color: 'hover:text-pink-600 hover:bg-pink-50 hover:border-pink-200', 
       icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.996 4h.009c2.617 0 3.864 0 4.821.503a5.006 5.006 0 012.169 2.169C19.5 7.63 19.5 8.878 19.5 11.496v1.008c0 2.618 0 3.865-.504 4.822a5.007 5.007 0 01-2.169 2.168C15.87 20 14.623 20 12.005 20h-1.009c-2.617 0-3.865 0-4.821-.504a5.007 5.007 0 01-2.169-2.168C3.5 16.37 3.5 15.122 3.5 12.505v-1.009c0-2.617 0-3.864.504-4.821a5.007 5.007 0 012.169-2.169C7.13 4 8.378 4 10.995 4h1.001zm0 0h1.001M16 8a.5.5 0 110-1 .5.5 0 010 1zM12 16a4 4 0 100-8 4 4 0 000 8z" /></svg>
     },
@@ -411,7 +411,7 @@ const App: React.FC = () => {
     },
     { 
       name: 'TikTok', 
-      url: 'https://tiktok.com', 
+      url: 'https://www.tiktok.com/@distribuciones_in_nova?_r=1&_t=ZS-92kZD7YkRL3', 
       color: 'hover:text-black hover:bg-slate-50 hover:border-slate-300', 
       icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h2a5 5 0 015 5v3M15 7a4 4 0 014 4m-4-11v11a4 4 0 01-4 4h-2" /></svg>
     },
