@@ -11,7 +11,7 @@ import AdminModal from './components/AdminModal';
 import AdminDashboard from './components/AdminDashboard';
 import { jsPDF } from "jspdf";
 
-const DB_KEY = 'innova_full_db_v9'; // Actualizado para cambiar la imagen del Combo
+const DB_KEY = 'innova_full_db_v9';
 const SALES_KEY = 'innova_sales_history_v2';
 const SETTINGS_KEY = 'innova_settings_v2';
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800';
@@ -475,22 +475,32 @@ const App: React.FC = () => {
           <div className="space-y-12">
             {newArrivals.length > 0 && searchTerm === '' && selectedCategory === Category.ALL && (
               <section className="animate-in slide-in-from-bottom duration-700">
-                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
-                  <div className="flex items-center gap-3">
-                    <span className="bg-cyan-500 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">Lo Nuevo</span>
-                    <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Novedades In-Nova</h2>
-                  </div>
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="bg-cyan-500 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest">Lo Nuevo</span>
+                  <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Novedades In-Nova</h2>
+                </div>
+                <div className="flex gap-4 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
                   <a 
                     href="https://back.ofertix.co/datosmaestras/getCatalogo/1" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="bg-purple-600 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-purple-200 hover:bg-purple-700 transition-all flex items-center gap-2 w-fit"
+                    className="min-w-[200px] sm:min-w-[240px] bg-white rounded-[2rem] p-4 border border-slate-100 shadow-sm hover:shadow-xl transition-all cursor-pointer group flex flex-col"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                    Por Encargo
+                    <div className="aspect-square rounded-2xl overflow-hidden bg-slate-50 mb-4 relative group-hover:scale-105 transition-transform duration-700">
+                       <img 
+                          src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=800&auto=format&fit=crop" 
+                          alt="Catálogo Por Encargo" 
+                          className="w-full h-full object-cover"
+                       />
+                       <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
+                       <span className="absolute bottom-3 right-3 bg-purple-600 text-white text-[8px] font-black uppercase px-2 py-1 rounded-lg shadow-md z-10">Proveedor</span>
+                    </div>
+                    <h4 className="font-black text-slate-900 text-xs uppercase truncate mb-1">Catálogo Por Encargo</h4>
+                    <p className="text-purple-600 font-black text-xs uppercase tracking-widest mt-auto flex items-center gap-1">
+                      Ver Catálogo <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                    </p>
                   </a>
-                </div>
-                <div className="flex gap-4 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+
                   {newArrivals.map(p => (
                     <div key={p.id} onClick={() => setSelectedProduct(p)} className="min-w-[200px] sm:min-w-[240px] bg-white rounded-[2rem] p-4 border border-slate-100 shadow-sm hover:shadow-xl transition-all cursor-pointer group">
                       <div className="aspect-square rounded-2xl overflow-hidden bg-slate-50 mb-4">
