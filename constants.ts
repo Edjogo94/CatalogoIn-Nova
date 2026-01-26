@@ -2,6 +2,14 @@
 export const WHATSAPP_PHONE = "573206064030";
 
 export const RAW_PRODUCT_NAMES = [
+  "MINI LAVADORA",
+  "NEBULIZADOR PORTÁTIL",
+  "BOLSO MORRAL AMAZON",
+  "BOLSA PARA COMPRAS ESTILO LLAVERO",
+  "KIT SET JUEGO DE MANICURE CORTA UÑAS 18 PCS",
+  "BASCULA DIGITAL",
+  "TERMO DIGITAL",
+  "PACK DE MATERIAL DE MATEMÁTICAS",
   "ESPEJO RETROVISOR 160 GRADOS",
   "SPRAY DE ACEITE CON MANIGUETA",
   "MESA PORTÁTIL PARA LAPTOP",
@@ -49,6 +57,14 @@ export const RAW_PRODUCT_NAMES = [
 ];
 
 export const PRODUCT_DESCRIPTIONS: Record<string, string> = {
+  "MINI LAVADORA": "Lavadora portátil compacta y ligera, ideal para prendas pequeñas, ropa interior o ropa de bebé. Ahorro de agua y energía, perfecta para espacios reducidos o viajes.",
+  "NEBULIZADOR PORTÁTIL": "Dispositivo médico portátil de malla vibratoria, ultra silencioso y compacto. Ideal para tratamientos respiratorios en casa o viajes. Funciona con pilas o conexión USB.",
+  "BOLSO MORRAL AMAZON": "Morral estilo Amazon de alta capacidad y resistencia. Diseño ergonómico premium, múltiples compartimentos acolchados para tecnología y accesorios, ideal para viajes, estudio o trabajo pesado.",
+  "BOLSA PARA COMPRAS ESTILO LLAVERO": "Práctica bolsa de compras plegable que se guarda en un pequeño estuche tipo llavero. Resistente, ecológica y siempre a la mano para tus compras imprevistas.",
+  "KIT SET JUEGO DE MANICURE CORTA UÑAS 18 PCS": "Set profesional de 18 piezas para cuidado de manos, pies y rostro. Incluye cortaúñas, tijeras, limas y herramientas de precisión en un estuche elegante, portátil y resistente.",
+  "BASCULA DIGITAL": "Controla tu peso con precisión y estilo. Báscula digital con plataforma de vidrio templado resistente, pantalla LCD de fácil lectura y encendido automático. Soporta hasta 180kg.",
+  "TERMO DIGITAL": "Termo inteligente con pantalla LED táctil que muestra la temperatura exacta de tu bebida. Fabricado en acero inoxidable de doble pared, mantiene el calor o frío por hasta 12 horas. Incluye filtro para té.",
+  "PACK DE MATERIAL DE MATEMÁTICAS": "Material de estudio 100% VIRTUAL. Acceso inmediato a biblioteca digital con libros PDF, guías de ejercicios, documentos y videos explicativos. Ideal para reforzar el aprendizaje desde casa.",
   "ESPEJO RETROVISOR 160 GRADOS": "Maximiza tu seguridad al conducir. Espejo panorámico de 160 grados que elimina puntos ciegos, ideal para motocicletas y bicicletas con instalación universal.",
   "SPRAY DE ACEITE CON MANIGUETA": "Cocina de forma más saludable controlando la cantidad de aceite. Dispensador con manigueta ergonómica y boquilla de niebla fina para una distribución uniforme.",
   "MESA PORTÁTIL PARA LAPTOP": "Trabaja o estudia cómodamente desde tu cama o sofá. Mesa plegable, ligera y resistente con espacio optimizado para tu portátil y mouse.",
@@ -96,6 +112,14 @@ export const PRODUCT_DESCRIPTIONS: Record<string, string> = {
 };
 
 export const PRODUCT_PRICES: Record<string, number> = {
+  "MINI LAVADORA": 70000,
+  "NEBULIZADOR PORTÁTIL": 25000,
+  "BOLSO MORRAL AMAZON": 90000,
+  "BOLSA PARA COMPRAS ESTILO LLAVERO": 8000,
+  "KIT SET JUEGO DE MANICURE CORTA UÑAS 18 PCS": 22000,
+  "BASCULA DIGITAL": 24000,
+  "TERMO DIGITAL": 16000,
+  "PACK DE MATERIAL DE MATEMÁTICAS": 20000,
   "ESPEJO RETROVISOR 160 GRADOS": 40000,
   "SPRAY DE ACEITE CON MANIGUETA": 10000,
   "MESA PORTÁTIL PARA LAPTOP": 35000,
@@ -128,11 +152,11 @@ export const PRODUCT_PRICES: Record<string, number> = {
   "DIADEMA P9": 22000,
   "SET DE MALETA DE ARTE": 45000,
   "KIT ARTISTICO DE 208 PIEZAS": 29000,
-  "Waves - Altavoz Bluetooth, reproductor portátil de CD/vinilo, estilo vintage con luces ambientales, color blanco": 65000,
-  "AFILADOR DE CUCHILLO": 20000,
-  "Ventilador de mano": 30000,
-  "Combo Smartwatch CN-RU3 ACME + Audífonos": 82000,
-  "Parlante Impermeable": 15000,
+  "Waves - Altavoz Bluetooth, reproductor portátil de CD/vinilo, estilo vintage con luces ambientales, color blanco": 75000,
+  "AFILADOR DE CUCHILLO": 25000,
+  "Ventilador de mano": 35000,
+  "Combo Smartwatch CN-RU3 ACME + Audífonos": 86000,
+  "Parlante Impermeable": 18000,
   "TIJERAS LASER": 20000,
   "DISPENSADOR DE GRANOS": 20000,
   "CINTURON TÉRMICO": 35000,
@@ -143,6 +167,14 @@ export const PRODUCT_PRICES: Record<string, number> = {
 };
 
 export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
+  "MINI LAVADORA": 80000,
+  "NEBULIZADOR PORTÁTIL": 30000,
+  "BOLSO MORRAL AMAZON": 100000,
+  "BOLSA PARA COMPRAS ESTILO LLAVERO": 12000,
+  "KIT SET JUEGO DE MANICURE CORTA UÑAS 18 PCS": 25000,
+  "BASCULA DIGITAL": 28000,
+  "TERMO DIGITAL": 20000,
+  "PACK DE MATERIAL DE MATEMÁTICAS": 30000,
   "ESPEJO RETROVISOR 160 GRADOS": 50000,
   "SPRAY DE ACEITE CON MANIGUETA": 16000,
   "MESA PORTÁTIL PARA LAPTOP": 40000,
@@ -190,6 +222,14 @@ export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
 };
 
 export const PRODUCT_STOCK: Record<string, number> = {
+  "MINI LAVADORA": 10,
+  "NEBULIZADOR PORTÁTIL": 20,
+  "BOLSO MORRAL AMAZON": 15,
+  "BOLSA PARA COMPRAS ESTILO LLAVERO": 50,
+  "KIT SET JUEGO DE MANICURE CORTA UÑAS 18 PCS": 20,
+  "BASCULA DIGITAL": 20,
+  "TERMO DIGITAL": 30,
+  "PACK DE MATERIAL DE MATEMÁTICAS": 50,
   "ESPEJO RETROVISOR 160 GRADOS": 15,
   "SPRAY DE ACEITE CON MANIGUETA": 15,
   "MESA PORTÁTIL PARA LAPTOP": 15,
@@ -237,6 +277,30 @@ export const PRODUCT_STOCK: Record<string, number> = {
 };
 
 export const PRODUCT_ASSETS: Record<string, { image?: string; video?: string }> = {
+  "MINI LAVADORA": {
+    image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/e5b1e059-b9b3-4147-b763-927364c4fd31.webp"
+  },
+  "NEBULIZADOR PORTÁTIL": {
+    image: "https://back.ofertix.co/recursos/imagenes/7005_W302.webp"
+  },
+  "BOLSO MORRAL AMAZON": {
+    image: "https://back.ofertix.co/recursos/imagenes/3560_F25209B.webp"
+  },
+  "BOLSA PARA COMPRAS ESTILO LLAVERO": {
+    image: "https://back.ofertix.co/recursos/imagenes/8056_F25141.webp"
+  },
+  "KIT SET JUEGO DE MANICURE CORTA UÑAS 18 PCS": {
+    image: "https://back.ofertix.co/recursos/imagenes/1234_F25211.webp"
+  },
+  "BASCULA DIGITAL": {
+    image: "https://back.ofertix.co/recursos/imagenes/9805_OC26BL.webp"
+  },
+  "TERMO DIGITAL": {
+    image: "https://http2.mlstatic.com/D_Q_NP_751751-MLU77024807685_062024-B.webp"
+  },
+  "PACK DE MATERIAL DE MATEMÁTICAS": {
+    image: "https://images.unsplash.com/photo-1596495578065-6e0763fa1178?q=80&w=800"
+  },
   "ESPEJO RETROVISOR 160 GRADOS": {
     image: "https://i.ibb.co/cKYFM7Sy/D-NQ-NP-2-X-939354-MCO77333986825-062024-F.webp"
   },

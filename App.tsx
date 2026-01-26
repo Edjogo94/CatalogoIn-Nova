@@ -100,12 +100,13 @@ const App: React.FC = () => {
            } else {
              loadedProducts = RAW_PRODUCT_NAMES.map((name, index) => {
                let cat = Category.HOME;
-               if (name.includes("SECADOR") || name.includes("CEPILLO") || name.includes("BARBERA") || name.includes("DIADEMA")) cat = Category.BEAUTY;
+               if (name.includes("SECADOR") || name.includes("CEPILLO") || name.includes("BARBERA") || name.includes("DIADEMA") || name.includes("MANICURE") || name.includes("NEBULIZADOR")) cat = Category.BEAUTY;
                if (name.includes("HIDROLAVADORA") || name.includes("HERRAMIENTA") || name.includes("AFILADOR") || name.includes("ESPEJO")) cat = Category.TOOLS;
-               if (name.includes("CINTA") || name.includes("CÁMARA") || name.includes("RELOJ") || name.includes("LAMPARA")) cat = Category.TECH;
-               if (name.includes("BOLSO") || name.includes("ORGANIZADOR")) cat = Category.ORGANIZATION;
-               if (name.includes("COCINA") || name.includes("SARTEN") || name.includes("DISPENSADOR") || name.includes("SPRAY") || name.includes("ACEITE")) cat = Category.KITCHEN;
+               if (name.includes("CINTA") || name.includes("CÁMARA") || name.includes("RELOJ") || name.includes("LAMPARA") || name.includes("MATEMÁTICAS")) cat = Category.TECH;
+               if (name.includes("BOLSO") || name.includes("BOLSA") || name.includes("ORGANIZADOR") || name.includes("AMAZON")) cat = Category.ORGANIZATION;
+               if (name.includes("COCINA") || name.includes("SARTEN") || name.includes("DISPENSADOR") || name.includes("SPRAY") || name.includes("ACEITE") || name.includes("TERMO")) cat = Category.KITCHEN;
                if (name.includes("MESA") || name.includes("PORTÁTIL")) cat = Category.HOME; 
+               if (name.includes("BASCULA")) cat = Category.HOME;
                
                return {
                  id: `prod-${index}-${Date.now()}`,
@@ -118,7 +119,7 @@ const App: React.FC = () => {
                  image: PRODUCT_ASSETS[name]?.image || FALLBACK_IMAGE,
                  features: ["Calidad garantizada"],
                  videoUrl: PRODUCT_ASSETS[name]?.video,
-                 isNew: name.includes("T60") || name.includes("BOLSO") || name.includes("MESA") || name.includes("SPRAY") || name.includes("ESPEJO"), 
+                 isNew: name.includes("T60") || name.includes("BOLSO") || name.includes("MESA") || name.includes("SPRAY") || name.includes("ESPEJO") || name.includes("MATEMÁTICAS") || name.includes("TERMO DIGITAL") || name.includes("BASCULA") || name.includes("MANICURE") || name.includes("BOLSA") || name.includes("NEBULIZADOR") || name.includes("AMAZON") || name.includes("MINI LAVADORA"), 
                  isCombo: name.includes("COMBO"),
                  supplierCost: 0
                };
@@ -486,7 +487,7 @@ const App: React.FC = () => {
                     rel="noopener noreferrer"
                     className="min-w-[200px] sm:min-w-[240px] bg-white rounded-[2rem] p-4 border border-slate-100 shadow-sm hover:shadow-xl transition-all cursor-pointer group flex flex-col"
                   >
-                    <div className="aspect-square rounded-2xl overflow-hidden bg-slate-50 mb-4 relative group-hover:scale-105 transition-transform duration-700">
+                    <div className="aspect-square rounded-2xl overflow-hidden bg-slate-50 mb-4 relative group-hover:scale-110 transition-transform duration-700">
                        <img 
                           src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=800&auto=format&fit=crop" 
                           alt="Catálogo Por Encargo" 
