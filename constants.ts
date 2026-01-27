@@ -2,6 +2,9 @@
 export const WHATSAPP_PHONE = "573206064030";
 
 export const RAW_PRODUCT_NAMES = [
+  "ZAPATERA PLÁSTICA 8 NIVELES",
+  "PLANCHA A VAPOR",
+  "AMPLIFICADOR DE VOZ PORTÁTIL",
   "MINI LAVADORA",
   "NEBULIZADOR PORTÁTIL",
   "BOLSO MORRAL AMAZON",
@@ -57,6 +60,9 @@ export const RAW_PRODUCT_NAMES = [
 ];
 
 export const PRODUCT_DESCRIPTIONS: Record<string, string> = {
+  "ZAPATERA PLÁSTICA 8 NIVELES": "Organiza tus zapatos de forma práctica y sin ocupar mucho espacio. Ideal para mantener todo en orden en habitaciones, clósets o entradas.\n✔ Ahorra espacio: diseño vertical y compacto\n✔ Material resistente: plástico durable y fácil de limpiar\n✔ Uso versátil: perfecta para hogar, negocio o bodega\n📏 Medidas: 27 x 26 x 122.5 cm\n🎨 Color: Trasparente\n¡Despídete del desorden y organiza con estilo! ✨",
+  "PLANCHA A VAPOR": "Plancha compacta y giratoria para eliminar arrugas en segundos. \n✔ Rotación 180°: mayor precisión\n✔ Micro vapor pro: alisa rápido sin dañar\n✔ Portátil: ligera y perfecta para llevar\n📏 Medidas: 9 x 7 x 25 cm\n🫙 Capacidad: 150 ml | 🔋Potencia: 35W.\n¡Tu ropa impecable donde vayas! ✨👔",
+  "AMPLIFICADOR DE VOZ PORTÁTIL": "Hazte escuchar con claridad donde sea, ideal para clases, guías, entrenamientos o presentaciones. Amplifica tu voz sin esfuerzo hasta para 100 personas. 🎶\n✔ Potencia: 8 W con sonido nítido y natural\n✔ Batería 2200 mAh: duración de 12 – 15 h\n✔ Funciones: Bluetooth, AUX, grabación, usb y tarjeta TF\n📏 Medidas: 7 x 7 cm CM\n📦 Incluye: amplificador, micrófono con cable, correa, cable USB y AUX\nCompacto, ligero y fácil de usar ¡lleva tu voz al siguiente nivel! 🔊",
   "MINI LAVADORA": "Lavadora portátil compacta y ligera, ideal para prendas pequeñas, ropa interior o ropa de bebé. Ahorro de agua y energía, perfecta para espacios reducidos o viajes.",
   "NEBULIZADOR PORTÁTIL": "Dispositivo médico portátil de malla vibratoria, ultra silencioso y compacto. Ideal para tratamientos respiratorios en casa o viajes. Funciona con pilas o conexión USB.",
   "BOLSO MORRAL AMAZON": "Morral estilo Amazon de alta capacidad y resistencia. Diseño ergonómico premium, múltiples compartimentos acolchados para tecnología y accesorios, ideal para viajes, estudio o trabajo pesado.",
@@ -112,6 +118,9 @@ export const PRODUCT_DESCRIPTIONS: Record<string, string> = {
 };
 
 export const PRODUCT_PRICES: Record<string, number> = {
+  "ZAPATERA PLÁSTICA 8 NIVELES": 45000,
+  "PLANCHA A VAPOR": 55000,
+  "AMPLIFICADOR DE VOZ PORTÁTIL": 40000,
   "MINI LAVADORA": 70000,
   "NEBULIZADOR PORTÁTIL": 25000,
   "BOLSO MORRAL AMAZON": 90000,
@@ -161,12 +170,15 @@ export const PRODUCT_PRICES: Record<string, number> = {
   "DISPENSADOR DE GRANOS": 20000,
   "CINTURON TÉRMICO": 35000,
   "MOLINILLO DE ESPECIAS": 30000,
-  "TAPETE DE GRIFO": 20000,
+  "TAPETE DE GRIFO": 10000,
   "ASPIRADORA DE MANO": 70000,
   "SARTEN ANTIADHERENTE 3 ESPACIOS": 24500
 };
 
 export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
+  "ZAPATERA PLÁSTICA 8 NIVELES": 50000,
+  "PLANCHA A VAPOR": 60000,
+  "AMPLIFICADOR DE VOZ PORTÁTIL": 45000,
   "MINI LAVADORA": 80000,
   "NEBULIZADOR PORTÁTIL": 30000,
   "BOLSO MORRAL AMAZON": 100000,
@@ -222,6 +234,9 @@ export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
 };
 
 export const PRODUCT_STOCK: Record<string, number> = {
+  "ZAPATERA PLÁSTICA 8 NIVELES": 15,
+  "PLANCHA A VAPOR": 10,
+  "AMPLIFICADOR DE VOZ PORTÁTIL": 15,
   "MINI LAVADORA": 10,
   "NEBULIZADOR PORTÁTIL": 20,
   "BOLSO MORRAL AMAZON": 15,
@@ -277,6 +292,15 @@ export const PRODUCT_STOCK: Record<string, number> = {
 };
 
 export const PRODUCT_ASSETS: Record<string, { image?: string; video?: string }> = {
+  "ZAPATERA PLÁSTICA 8 NIVELES": {
+    image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/e42dd68c-c60d-4f48-999e-180517c826ca.webp"
+  },
+  "PLANCHA A VAPOR": {
+    image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/69634d31-adf7-4e64-ad9e-01fd7693ed0e.webp"
+  },
+  "AMPLIFICADOR DE VOZ PORTÁTIL": {
+    image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/d12c9dc6-6ddd-4026-86c3-bf36e4b18d73.webp"
+  },
   "MINI LAVADORA": {
     image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/e5b1e059-b9b3-4147-b763-927364c4fd31.webp"
   },
