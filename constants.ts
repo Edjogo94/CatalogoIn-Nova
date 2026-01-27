@@ -2,6 +2,10 @@
 export const WHATSAPP_PHONE = "573206064030";
 
 export const RAW_PRODUCT_NAMES = [
+  "SOMBRILLA PARAGUA UV",
+  "JUEGO DE MESA BASTA CLASICO GRANDE",
+  "SOPORTE PARA CEPILLOS DE DIENTES Y DISPENADOR DE CREMA DENTAL CON LUZ UV",
+  "LENTES INTELIGENTES CON PARLANTES AURICULARES INCORPORADOS",
   "ZAPATERA PLÁSTICA 8 NIVELES",
   "PLANCHA A VAPOR",
   "AMPLIFICADOR DE VOZ PORTÁTIL",
@@ -60,6 +64,10 @@ export const RAW_PRODUCT_NAMES = [
 ];
 
 export const PRODUCT_DESCRIPTIONS: Record<string, string> = {
+  "SOMBRILLA PARAGUA UV": "Disponible en Rosa, Azul, Verde, Vinotinto y Negro\nCompletamente automático\n\nDiámetro abierto :100cm\nEstilo de diseño : Contemporáneo\nGrupo de edad : Adultos y Niños\nMaterial de los paneles : Pongis\nMaterial : Tela de nailon 190T.\nNombre de la marca : Woqing\nNúmero de modelo : ZD-UV\nEstilo : paraguas UV plegable",
+  "JUEGO DE MESA BASTA CLASICO GRANDE": "Basta es el divertido juego de palabras, demuestra tu habilidad para encontrar las palabras con las iniciales que indican en el tablero, pero no te limites, vienen 36 cartas con conceptos, pero puedes crear tus propios conceptos para hacer más divertido el juego.\n\nMientras avanza el juego, las letras se irán acabando, Si no respondes pierdes por tiempo.\nResponde usando las letras del teclado y presiona el botón central.\n\nComienza la ronda de palabras y presiona la letra con la que inicia la palabra que mencionaste.",
+  "SOPORTE PARA CEPILLOS DE DIENTES Y DISPENADOR DE CREMA DENTAL CON LUZ UV": "Vida duradera, sin necesidad de continuar cargando más tranquilidad, carga usb durante 6 horas.\n• Sensor infrarrojo inteligente, sensor infrarrojo sensible, inducción dentro del rango de 2m, indicador de iluminación.\n• Instalación sin perforaciones, fuerte adhesión, sin daños en la pared\n• Color: blanco",
+  "LENTES INTELIGENTES CON PARLANTES AURICULARES INCORPORADOS": "Gafas de sol inteligentes ITHUGE XG88 Pro con lentes polarizados UV400 que brindan protección total contra rayos solares, reducen el deslumbramiento y mejoran claridad y contraste.\n\n- Tecnología de audio de oído abierto con altavoces estéreo integrados que ofrecen sonido de alta definición sin aislar del entorno.\n- Micrófono omnidireccional y altavoz integrados en el bisel para llamadas Bluetooth manos libres con voz clara.\n- Conectividad Bluetooth 5.3 de última generación, compatible con dispositivos Android e iOS, con conexión rápida y estable.\n- Botón multifuncional integrado para reproducir o pausar música, cambiar pistas, gestionar llamadas y activar asistentes de voz.\n- Batería de alta calidad con carga completa en aproximadamente 1 hora, diseñada para uso seguro y prolongado.\n- Autonomía de uso: hasta 8 horas de reproducción continua, tiempo de espera de hasta 120 horas y hasta 4 horas en llamadas.\n- Diseño ergonómico, ligero y cómodo, ideal para conducir, hacer ejercicio o actividades al aire libre durante todo el día.\n\nFunciones inteligentes combinadas con protección UV y estilo moderno, integrando tecnología portátil avanzada en un solo dispositivo.",
   "ZAPATERA PLÁSTICA 8 NIVELES": "Organiza tus zapatos de forma práctica y sin ocupar mucho espacio. Ideal para mantener todo en orden en habitaciones, clósets o entradas.\n✔ Ahorra espacio: diseño vertical y compacto\n✔ Material resistente: plástico durable y fácil de limpiar\n✔ Uso versátil: perfecta para hogar, negocio o bodega\n📏 Medidas: 27 x 26 x 122.5 cm\n🎨 Color: Trasparente\n¡Despídete del desorden y organiza con estilo! ✨",
   "PLANCHA A VAPOR": "Plancha compacta y giratoria para eliminar arrugas en segundos. \n✔ Rotación 180°: mayor precisión\n✔ Micro vapor pro: alisa rápido sin dañar\n✔ Portátil: ligera y perfecta para llevar\n📏 Medidas: 9 x 7 x 25 cm\n🫙 Capacidad: 150 ml | 🔋Potencia: 35W.\n¡Tu ropa impecable donde vayas! ✨👔",
   "AMPLIFICADOR DE VOZ PORTÁTIL": "Hazte escuchar con claridad donde sea, ideal para clases, guías, entrenamientos o presentaciones. Amplifica tu voz sin esfuerzo hasta para 100 personas. 🎶\n✔ Potencia: 8 W con sonido nítido y natural\n✔ Batería 2200 mAh: duración de 12 – 15 h\n✔ Funciones: Bluetooth, AUX, grabación, usb y tarjeta TF\n📏 Medidas: 7 x 7 cm CM\n📦 Incluye: amplificador, micrófono con cable, correa, cable USB y AUX\nCompacto, ligero y fácil de usar ¡lleva tu voz al siguiente nivel! 🔊",
@@ -118,6 +126,10 @@ export const PRODUCT_DESCRIPTIONS: Record<string, string> = {
 };
 
 export const PRODUCT_PRICES: Record<string, number> = {
+  "SOMBRILLA PARAGUA UV": 20000,
+  "JUEGO DE MESA BASTA CLASICO GRANDE": 27000,
+  "SOPORTE PARA CEPILLOS DE DIENTES Y DISPENADOR DE CREMA DENTAL CON LUZ UV": 16000,
+  "LENTES INTELIGENTES CON PARLANTES AURICULARES INCORPORADOS": 25000,
   "ZAPATERA PLÁSTICA 8 NIVELES": 45000,
   "PLANCHA A VAPOR": 55000,
   "AMPLIFICADOR DE VOZ PORTÁTIL": 40000,
@@ -170,12 +182,16 @@ export const PRODUCT_PRICES: Record<string, number> = {
   "DISPENSADOR DE GRANOS": 20000,
   "CINTURON TÉRMICO": 35000,
   "MOLINILLO DE ESPECIAS": 30000,
-  "TAPETE DE GRIFO": 10000,
+  "TAPETE DE GRIFO": 20000,
   "ASPIRADORA DE MANO": 70000,
   "SARTEN ANTIADHERENTE 3 ESPACIOS": 24500
 };
 
 export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
+  "SOMBRILLA PARAGUA UV": 25000,
+  "JUEGO DE MESA BASTA CLASICO GRANDE": 30000,
+  "SOPORTE PARA CEPILLOS DE DIENTES Y DISPENADOR DE CREMA DENTAL CON LUZ UV": 20000,
+  "LENTES INTELIGENTES CON PARLANTES AURICULARES INCORPORADOS": 30000,
   "ZAPATERA PLÁSTICA 8 NIVELES": 50000,
   "PLANCHA A VAPOR": 60000,
   "AMPLIFICADOR DE VOZ PORTÁTIL": 45000,
@@ -234,6 +250,10 @@ export const PRODUCT_RETAIL_PRICES: Record<string, number> = {
 };
 
 export const PRODUCT_STOCK: Record<string, number> = {
+  "SOMBRILLA PARAGUA UV": 15,
+  "JUEGO DE MESA BASTA CLASICO GRANDE": 15,
+  "SOPORTE PARA CEPILLOS DE DIENTES Y DISPENADOR DE CREMA DENTAL CON LUZ UV": 15,
+  "LENTES INTELIGENTES CON PARLANTES AURICULARES INCORPORADOS": 15,
   "ZAPATERA PLÁSTICA 8 NIVELES": 15,
   "PLANCHA A VAPOR": 10,
   "AMPLIFICADOR DE VOZ PORTÁTIL": 15,
@@ -292,6 +312,18 @@ export const PRODUCT_STOCK: Record<string, number> = {
 };
 
 export const PRODUCT_ASSETS: Record<string, { image?: string; video?: string }> = {
+  "SOMBRILLA PARAGUA UV": {
+    image: "https://back.ofertix.co/recursos/imagenes/5142_F25206.webp"
+  },
+  "JUEGO DE MESA BASTA CLASICO GRANDE": {
+    image: "https://http2.mlstatic.com/D_NQ_NP_2X_935002-CBT80842319551_112024-F.webp"
+  },
+  "SOPORTE PARA CEPILLOS DE DIENTES Y DISPENADOR DE CREMA DENTAL CON LUZ UV": {
+    image: "https://back.ofertix.co/recursos/imagenes/2217_F1031.webp"
+  },
+  "LENTES INTELIGENTES CON PARLANTES AURICULARES INCORPORADOS": {
+    image: "https://back.ofertix.co/recursos/imagenes/2246_D031MK.webp"
+  },
   "ZAPATERA PLÁSTICA 8 NIVELES": {
     image: "https://d2nagnwby8accc.cloudfront.net/companies/products/images/800/e42dd68c-c60d-4f48-999e-180517c826ca.webp"
   },

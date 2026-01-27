@@ -11,7 +11,7 @@ import AdminModal from './components/AdminModal';
 import AdminDashboard from './components/AdminDashboard';
 import { jsPDF } from "jspdf";
 
-const DB_KEY = 'innova_full_db_v13';
+const DB_KEY = 'innova_full_db_v17';
 const SALES_KEY = 'innova_sales_history_v2';
 const SETTINGS_KEY = 'innova_settings_v2';
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800';
@@ -102,7 +102,7 @@ const App: React.FC = () => {
                let cat = Category.HOME;
                if (name.includes("SECADOR") || name.includes("CEPILLO") || name.includes("BARBERA") || name.includes("DIADEMA") || name.includes("MANICURE") || name.includes("NEBULIZADOR")) cat = Category.BEAUTY;
                if (name.includes("HIDROLAVADORA") || name.includes("HERRAMIENTA") || name.includes("AFILADOR") || name.includes("ESPEJO")) cat = Category.TOOLS;
-               if (name.includes("CINTA") || name.includes("CÁMARA") || name.includes("RELOJ") || name.includes("LAMPARA") || name.includes("MATEMÁTICAS") || name.includes("AMPLIFICADOR")) cat = Category.TECH;
+               if (name.includes("CINTA") || name.includes("CÁMARA") || name.includes("RELOJ") || name.includes("LAMPARA") || name.includes("MATEMÁTICAS") || name.includes("AMPLIFICADOR") || name.includes("LENTES")) cat = Category.TECH;
                if (name.includes("BOLSO") || name.includes("BOLSA") || name.includes("ORGANIZADOR") || name.includes("AMAZON") || name.includes("ZAPATERA")) cat = Category.ORGANIZATION;
                if (name.includes("COCINA") || name.includes("SARTEN") || name.includes("DISPENSADOR") || name.includes("SPRAY") || name.includes("ACEITE") || name.includes("TERMO")) cat = Category.KITCHEN;
                if (name.includes("MESA") || name.includes("PORTÁTIL") || name.includes("PLANCHA")) cat = Category.HOME; 
@@ -119,7 +119,7 @@ const App: React.FC = () => {
                  image: PRODUCT_ASSETS[name]?.image || FALLBACK_IMAGE,
                  features: ["Calidad garantizada"],
                  videoUrl: PRODUCT_ASSETS[name]?.video,
-                 isNew: name.includes("T60") || name.includes("BOLSO") || name.includes("MESA") || name.includes("SPRAY") || name.includes("ESPEJO") || name.includes("MATEMÁTICAS") || name.includes("TERMO DIGITAL") || name.includes("BASCULA") || name.includes("MANICURE") || name.includes("BOLSA") || name.includes("NEBULIZADOR") || name.includes("AMAZON") || name.includes("MINI LAVADORA") || name.includes("AMPLIFICADOR") || name.includes("PLANCHA") || name.includes("ZAPATERA"), 
+                 isNew: name.includes("T60") || name.includes("BOLSO") || name.includes("MESA") || name.includes("SPRAY") || name.includes("ESPEJO") || name.includes("MATEMÁTICAS") || name.includes("TERMO DIGITAL") || name.includes("BASCULA") || name.includes("MANICURE") || name.includes("BOLSA") || name.includes("NEBULIZADOR") || name.includes("AMAZON") || name.includes("MINI LAVADORA") || name.includes("AMPLIFICADOR") || name.includes("PLANCHA") || name.includes("ZAPATERA") || name.includes("LENTES") || name.includes("SOPORTE") || name.includes("BASTA") || name.includes("SOMBRILLA"), 
                  isCombo: name.includes("COMBO"),
                  supplierCost: 0
                };
