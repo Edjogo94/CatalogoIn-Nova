@@ -11,7 +11,7 @@ import AdminModal from './components/AdminModal';
 import AdminDashboard from './components/AdminDashboard';
 import { jsPDF } from "jspdf";
 
-const DB_KEY = 'innova_full_db_v9';
+const DB_KEY = 'innova_full_db_v10';
 const SALES_KEY = 'innova_sales_history_v2';
 const SETTINGS_KEY = 'innova_settings_v2';
 const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800';
